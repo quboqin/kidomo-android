@@ -1,4 +1,4 @@
-package com.cosine.myapplication
+package com.cosine.kidomo
 
 import org.junit.Test
 

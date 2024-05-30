@@ -1,4 +1,4 @@
-package com.cosine.myapplication.ui.theme
+package com.cosine.kidomo.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

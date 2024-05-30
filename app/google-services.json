@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "358029028281",
+    "project_id": "kidomo-59e99",
+    "storage_bucket": "kidomo-59e99.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:358029028281:android:a3e9b9f01502d8e49b6468",
+        "android_client_info": {
+          "package_name": "com.cosine.kidomo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD1KumzJ59kFN94rtBI1VtL7Lnl5uD20t0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

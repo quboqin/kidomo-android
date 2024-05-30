@@ -1,4 +1,4 @@
-package com.cosine.myapplication.ui.theme
+package com.cosine.kidomo.ui.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
