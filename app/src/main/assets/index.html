@@ -1,16 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>AgentWeb Example</title>
+    <title>WebView Bridge</title>
     <script type="text/javascript">
-        function callAndroidFunction() {
-            android.showToast("Hello from JavaScript!");
+        function sendMessageToAndroid() {
+            Android.showToast("Hello from JavaScript!");
+            Android.logMessage("This is a log message from JavaScript.");
         }
     </script>
 </head>
 <body>
-<div>hello</div>
-<div>world</div>
-<button onclick="callAndroidFunction()">Call Kotlin Function</button>
+<h1>WebView Bridge Example</h1>
+<button onclick="sendMessageToAndroid()">Send Message to Android</button>
 </body>
 </html>

@@ -1,34 +1,37 @@
 package com.cosine.kidomo
 
+import android.Manifest
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import android.util.Log
+import android.view.View
 import android.view.ViewGroup
-import android.widget.FrameLayout
+import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.viewinterop.AndroidView
-import com.just.agentweb.AgentWeb
 import androidx.compose.ui.tooling.preview.Preview
-import com.cosine.kidomo.ui.theme.KidomoTheme
-import android.webkit.JavascriptInterface
-import android.widget.Toast
-import androidx.activity.result.contract.ActivityResultContracts
-import android.os.Build
+import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import android.Manifest
-import android.content.pm.PackageManager
-import android.util.Log
+import com.cosine.kidomo.ui.theme.KidomoTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
+import android.webkit.JavascriptInterface
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
+import android.widget.Button
 
 class MainActivity : ComponentActivity() {
-    private lateinit var agentWeb: AgentWeb
+    private lateinit var webView: WebView
 
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
@@ -87,37 +90,52 @@ class MainActivity : ComponentActivity() {
             KidomoTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
                     AndroidView(factory = { context ->
-                        // Create a container for the AgentWeb
-                        val container = FrameLayout(context).apply {
-                            layoutParams = ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT,
-                                ViewGroup.LayoutParams.MATCH_PARENT
-                            )
-                        }
-                        agentWeb = AgentWeb.with(this@MainActivity).setAgentWebParent(
-                            container, ViewGroup.LayoutParams(
-                                ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT
-                            )
-                        ).useDefaultIndicator().createAgentWeb().ready().go("file:///android_asset/index.html")
+                        val mainView: View =layoutInflater.inflate(R.layout.main, null)
+                        webView = mainView.findViewById<WebView>(R.id.webview)
 
+                        // Enable JavaScript
+                        webView.settings.javaScriptEnabled = true
+                        // Set WebViewClient to handle loading URLs
+                        webView.webViewClient = WebViewClient()
+                        // Set WebChromeClient to handle JavaScript dialogs, titles, etc.
+                        webView.webChromeClient = WebChromeClient()
                         // Add JavaScript interface
-                        agentWeb.jsInterfaceHolder.addJavaObject("android", AndroidInterface(this))
+                        webView.addJavascriptInterface(WebAppInterface(this), "Android")
+                        // Load a web page
+                        webView.loadUrl("file:///android_asset/index.html")
 
-                        agentWeb.webCreator.webView
-                        container
-                    }, modifier = Modifier.fillMaxSize(), update = { webView ->
+                        val button = mainView.findViewById<Button>(R.id.button)
+                        button.setOnClickListener {
+                            callJavaScriptFunction()
+                        }
+
+                        mainView
+                    }, modifier = Modifier.fillMaxSize(), update = { mainView ->
                         // You can interact with the WebView here if needed
-                        (webView.parent as? ViewGroup)?.removeView(webView)
+                        (mainView.parent as? ViewGroup)?.removeView(mainView)
                     })
                 }
             }
         }
     }
 
-    private class AndroidInterface(val context: MainActivity) {
+    private class WebAppInterface(val context: ComponentActivity) {
         @JavascriptInterface
         fun showToast(message: String) {
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+        }
+
+        @JavascriptInterface
+        fun logMessage(message: String) {
+            Log.d("WebAppInterface", message)
+        }
+    }
+
+    private fun callJavaScriptFunction() {
+        val jsCode = "javascript:alert('Hello from Kotlin!')"
+        webView.evaluateJavascript(jsCode) { result ->
+            // Handle the result if needed
+            println("JavaScript executed: $result")
         }
     }
 }
