@@ -29,6 +29,8 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
+import com.cosine.kidomo.home.HomeTopAppBar
+import com.cosine.kidomo.util.showToast
 
 class MainActivity : ComponentActivity() {
     private lateinit var webView: WebView
@@ -88,7 +90,16 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             KidomoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
+                Scaffold(
+                    modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        HomeTopAppBar(
+                            onDeleteAllConfirmed = {
+                                showToast(this, "所有任务都已清空!")
+                            }
+                        )
+                    }
+                ) { _ ->
                     AndroidView(factory = { context ->
                         val mainView: View =layoutInflater.inflate(R.layout.main, null)
                         webView = mainView.findViewById<WebView>(R.id.webview)
