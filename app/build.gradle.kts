@@ -51,11 +51,12 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.ui:ui:1.3.0")
-    implementation("androidx.compose.material:material:1.3.0")
-    implementation("androidx.activity:activity-compose:1.5.0")
-    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.0")
-    implementation("androidx.compose.ui:ui-tooling:1.3.0")
+    implementation("androidx.compose.ui:ui:1.4.3")
+    implementation("androidx.compose.material:material:1.4.3")
+    implementation("androidx.compose.ui:ui-tooling-preview:1.4.3")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.5.3")
+    implementation("androidx.activity:activity-compose:1.4.3")
+    implementation("androidx.appcompat:appcompat:1.3.1")
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -64,7 +65,6 @@ dependencies {
     implementation(libs.androidx.ui)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
-    implementation(libs.androidx.material3)
     implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

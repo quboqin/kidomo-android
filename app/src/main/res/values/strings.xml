@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Kidomo</string>
+    <string name="delete_all_action">清空任务</string>
 </resources>

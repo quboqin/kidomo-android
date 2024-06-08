@@ -13,8 +13,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
@@ -29,6 +27,17 @@ import android.webkit.WebChromeClient
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Button
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.dp
+import com.cosine.kidomo.util.showToast
+import com.cosine.kidomo.ui.theme.*
 
 class MainActivity : ComponentActivity() {
     private lateinit var webView: WebView
@@ -88,7 +97,16 @@ class MainActivity : ComponentActivity() {
         
         setContent {
             KidomoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { _ ->
+                Scaffold(modifier = Modifier.fillMaxSize(),
+                    topBar = {
+                        HomeAppBar(
+                            onDeleteAllConfirmed = {
+                                // mainViewModel.deleteAllTasks()
+                                showToast(this, "所有任务都已清空!")
+                            }
+                        )
+                    }
+                ) { _ ->
                     AndroidView(factory = { context ->
                         val mainView: View =layoutInflater.inflate(R.layout.main, null)
                         webView = mainView.findViewById<WebView>(R.id.webview)
@@ -141,10 +159,83 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!", modifier = modifier
+fun HomeAppBar(
+    onDeleteAllConfirmed : () -> Unit
+) {
+    HomeTopAppBar(
+        onDeleteAllConfirmed = {
+            onDeleteAllConfirmed()
+        }
     )
+}
+
+@Composable
+fun HomeTopAppBar(
+    onDeleteAllConfirmed: () -> Unit
+) {
+    TopAppBar(
+        // 1，Title：任务列表
+        title = {
+            Text(
+                text = stringResource(id = R.string.app_name),
+                color = MaterialTheme.colors.topAppBarContent
+            )
+        },
+        // 2，选项：清空任务
+        actions = {
+            HomeAppBarActions(
+                onDeleteAllConfirmed = onDeleteAllConfirmed
+            )
+        },
+        backgroundColor = MaterialTheme.colors.topAppBarBackground
+    )
+}
+
+@Composable
+fun HomeAppBarActions(
+    onDeleteAllConfirmed: () -> Unit
+) {
+    var isShowDialog by remember { mutableStateOf(false) }
+
+    DeleteAllAction(onDeleteAllConfirmed = { isShowDialog = true })
+}
+
+@Composable
+fun DeleteAllAction(
+    onDeleteAllConfirmed: () -> Unit
+) {
+    var expanded by remember { mutableStateOf(false) }
+
+    IconButton(
+        onClick = { expanded = true }
+    ) {
+        // 1，更多按钮
+        Icon(
+            painter = painterResource(id = R.drawable.ic_more),
+            contentDescription = stringResource(id = R.string.delete_all_action),
+            tint = MaterialTheme.colors.topAppBarContent
+        )
+        // 2，下拉列表
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            // 3，下拉列表，「清空任务」
+            DropdownMenuItem(
+                onClick = {
+                    expanded = false
+                    onDeleteAllConfirmed()
+                }
+            ) {
+                Text(
+                    modifier = Modifier
+                        .padding(start = 12.dp),
+                    text = stringResource(id = R.string.delete_all_action),
+                    style = Typography.subtitle2
+                )
+            }
+        }
+    }
 }
 
 @Composable
