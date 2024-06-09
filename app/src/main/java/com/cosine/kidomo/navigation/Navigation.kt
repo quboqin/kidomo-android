@@ -49,7 +49,9 @@ fun SetupNavigation(
                 type = NavType.IntType
             })
         ) {
-            WebScreen()
+            WebScreen(
+                mainViewModel = mainViewModel
+            )
         }
     }
 }

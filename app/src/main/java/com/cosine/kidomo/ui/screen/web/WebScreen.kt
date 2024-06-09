@@ -13,13 +13,15 @@ import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
+import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.json.JSONObject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SetJavaScriptEnabled")
 @Composable
-fun WebScreen() {
+fun WebScreen(
+    mainViewModel: MainViewModel
+) {
     Scaffold {
         AndroidView(
             factory = { context ->
@@ -27,7 +29,7 @@ fun WebScreen() {
                     webViewClient = WebViewClient()
                     webChromeClient = WebChromeClient()
                     settings.javaScriptEnabled = true
-                    addJavascriptInterface(WebAppInterface(context, this), "Android")
+                    addJavascriptInterface(WebAppInterface(context, this, mainViewModel), "Android")
                     loadUrl("file:///android_asset/index.html")
                 }
             },
@@ -36,7 +38,7 @@ fun WebScreen() {
     }
 }
 
-private class WebAppInterface(val context: Context, val webView: WebView) {
+private class WebAppInterface(val context: Context, val webView: WebView, val viewModel: MainViewModel) {
     @JavascriptInterface
     fun showToast(message: String) {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
@@ -54,23 +56,12 @@ private class WebAppInterface(val context: Context, val webView: WebView) {
         val jsonObject: Map<String, Any> = gson.fromJson(jsonString, type)
         println(jsonObject)
 
-        val action = jsonObject["action"] as? String
         val callback = jsonObject["callback"] as? String
+        val jsonString = viewModel.nativeTask(jsonObject)
 
-        if (action == "send_credentials" && callback != null) {
-            // Assuming credentials have been sent successfully
-            val jsonObject = JSONObject()
-            jsonObject.put("key1", "value1")
-            jsonObject.put("key2", 12345)
-            jsonObject.put("key3", true)
-
-            // 将 JSON 对象转换为字符串
-            val jsonString = jsonObject.toString()
-
-            // Call the JavaScript callback function with the response
-            webView.post {
-                webView.evaluateJavascript("javascript:$callback($jsonString);", null)
-            }
+        // Call the JavaScript callback function with the response
+        webView.post {
+            webView.evaluateJavascript("javascript:$callback($jsonString);", null)
         }
     }
 
