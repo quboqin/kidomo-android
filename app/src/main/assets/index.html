@@ -7,10 +7,46 @@
             Android.showToast("Hello from JavaScript!");
             Android.logMessage("This is a log message from JavaScript.");
         }
+
+        function sendCredentialsToAndroid() {
+            // Get the values from the input fields
+            var username = document.getElementById('username').value;
+            var password = document.getElementById('password').value;
+
+            // Create a JSON object
+            var jsonObject = {
+                action: "send_credentials",
+                data: {
+                    username: username,
+                    password: password
+                },
+                callback: "callbackFromKotlin"
+            };
+
+            // Convert the JSON object to a string
+            var credentialsString = JSON.stringify(jsonObject);
+
+            // Call the Android function with the JSON string as a parameter
+            Android.callFromJavascript(credentialsString);
+        }
+
+        function callbackFromKotlin(jsonObject) {
+            alert(jsonObject.key1);
+        }
     </script>
 </head>
 <body>
-<h1>WebView Bridge Example</h1>
+<h4>WebView Bridge Example</h4>
+<p>
+    <input type="text" id="username" value="username" />
+</p>
+
+<p>
+    <input type="text" id="password" value="password" />
+</p>
 <button onclick="sendMessageToAndroid()">Send Message to Android</button>
+<button onclick="sendCredentialsToAndroid()">
+    Send User Credentials to Android
+</button>
 </body>
 </html>
