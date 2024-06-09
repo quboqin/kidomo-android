@@ -74,12 +74,21 @@ val Neutral2 = Color(0x61ffffff)
 val Neutral1 = Color(0xbdffffff)
 val Neutral0 = Color(0xffffffff)
 
+
 @Composable
 fun isLightTheme(colorScheme: ColorScheme): Boolean {
     // A simple heuristic to determine if the theme is light or dark
     // You can customize this logic based on your color scheme
     return colorScheme.background == Color.White || colorScheme.primary == Color(0xFF6200EE)
 }
+
+val ColorScheme.splashBackground: Color
+    @Composable
+    get() = if (isLightTheme(this)) Lavender5 else Color.Black
+
+val ColorScheme.splashText: Color
+    @Composable
+    get() = if (isLightTheme(this)) Color.White else Neutral8
 
 val ColorScheme.topAppBarContent: Color
     @Composable
