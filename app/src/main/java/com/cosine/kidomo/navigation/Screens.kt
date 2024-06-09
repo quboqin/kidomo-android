@@ -12,13 +12,13 @@ class Screens(navController: NavHostController) {
         }
     }
 
-    val gotoTaskDetail: (Int) -> Unit = { taskId ->
-        navController.navigate(route = "${AppHolder.TASK_DETAIL_BASE}$taskId")
-    }
-
     val gotoHomeScreen: () -> Unit = {
         navController.navigate(route = HOME_SCREEN) {
             popUpTo(HOME_SCREEN) { inclusive = true }
         }
+    }
+
+    val gotoWebView: (Int) -> Unit = { webId ->
+        navController.navigate(route = "${AppHolder.WEBVIEW_BASE}$webId")
     }
 }

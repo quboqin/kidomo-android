@@ -7,12 +7,9 @@ object AppHolder {
 
     const val SPLASH_SCREEN = "splash"
     const val HOME_SCREEN = "home"
-    const val TASK_DETAIL_BASE = "task_detail/"
-    const val TASK_ARG_KEY = "taskId"
-    const val TASK_DETAIL_SCREEN = "${TASK_DETAIL_BASE}{${TASK_ARG_KEY}}"
-
-    const val DB_TABLE = "todo_table"
-    const val DB_NAME = "todo_db"
+    const val WEBVIEW_BASE = "web view/"
+    const val WEBVIEW_ARG_KEY = "webId"
+    const val WEBVIEW_SCREEN = "${WEBVIEW_BASE}{${WEBVIEW_ARG_KEY}}"
 
     lateinit var appContext: Application
 }

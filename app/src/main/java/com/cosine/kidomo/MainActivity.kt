@@ -10,16 +10,11 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.content.ContextCompat
 import com.cosine.kidomo.ui.theme.KidomoTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
-import android.webkit.JavascriptInterface
 import androidx.activity.viewModels
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -92,37 +87,5 @@ class MainActivity : ComponentActivity() {
                 )
             }
         }
-    }
-
-    private class WebAppInterface(val context: ComponentActivity) {
-        @JavascriptInterface
-        fun showToast(message: String) {
-            Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-        }
-
-        @JavascriptInterface
-        fun logMessage(message: String) {
-            Log.d("WebAppInterface", message)
-        }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!", modifier = modifier
-    )
-}
-
-@Composable
-fun WebViewScreen() {
-
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    KidomoTheme {
-        WebViewScreen()
     }
 }

@@ -77,7 +77,7 @@ fun Splash(offsetState: Dp, alphaState: Float) {
                     .size(LOGO_HEIGHT)
                     .alpha(alpha = alphaState),
                 painter = painterResource(id = getLogo()),
-                contentDescription = stringResource(id = R.string.to_do_logo)
+                contentDescription = stringResource(id = R.string.kidomo_logo)
             )
 
             Text(
@@ -97,9 +97,9 @@ fun Splash(offsetState: Dp, alphaState: Float) {
 @Composable
 fun getLogo(): Int {
     return if (isSystemInDarkTheme()) {
-        R.drawable.to_do_logo
+        R.drawable.kidomo_logo
     } else {
-        R.drawable.to_do_logo
+        R.drawable.kidomo_logo
     }
 }
 

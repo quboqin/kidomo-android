@@ -8,7 +8,7 @@ import com.cosine.kidomo.util.showToast
 
 @Composable
 fun HomeScreen(
-    gotoTaskDetail: (taskId: Int) -> Unit,
+    gotoWebView: (taskId: Int) -> Unit,
     mainViewModel: MainViewModel
 ) {
     val context = LocalContext.current
@@ -16,13 +16,12 @@ fun HomeScreen(
     Scaffold(
         topBar = {
             HomeAppBar(
-                onDeleteAllConfirmed = {
-                    showToast(context, "所有任务都已清空!")
-                }
             )
         },
         content = {
-            HomeContent()
+            HomeContent(
+                gotoWebView = gotoWebView
+            )
         }
     )
 
