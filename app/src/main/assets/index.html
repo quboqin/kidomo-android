@@ -49,6 +49,10 @@
         function callbackFromKotlin(jsonObject) {
           alert(jsonObject.key1);
         }
+
+        function showActionSheet() {
+            Android.showActionSheet(true)
+        }
     </script>
     <style>
         body {
@@ -90,6 +94,7 @@
     <input type="text" id="password" value="password" />
 </p>
 <button onclick="sendMessageToAndroid()">Send Message to Android</button>
+<button onclick="showActionSheet()">Show Action Sheet</button>
 <button onclick="sendCredentialsToAndroid()">
     Send User Credentials to Android
 </button>

@@ -2,6 +2,7 @@ package com.cosine.kidomo.ui.screen.web
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -10,16 +11,33 @@ import androidx.compose.runtime.Composable
 import android.webkit.WebView
 import android.webkit.WebViewClient
 import android.widget.Toast
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Divider
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.navigation.NavHostController
+import androidx.compose.ui.window.Dialog
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import android.Manifest
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.LaunchedEffect
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SetJavaScriptEnabled")
 @Composable
@@ -35,9 +53,33 @@ fun WebScreen(
 }
 
 @Composable
-fun WebScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel, onBackButtonPressed: ()-> Boolean) {
+fun WebScreen(
+    modifier: Modifier = Modifier,
+    mainViewModel: MainViewModel,
+    onBackButtonPressed: () -> Boolean
+) {
+    var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val density = LocalDensity.current
+
+    val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            Toast.makeText(context, "Camera Permission Granted", Toast.LENGTH_SHORT).show()
+        } else {
+            Toast.makeText(context, "Camera Permission Denied", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED
+        ) {
+            // Request the camera permission
+            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+        }
+    }
 
     AndroidView(
         factory = { context ->
@@ -45,7 +87,16 @@ fun WebScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel, onBac
                 webViewClient = WebViewClient()
                 webChromeClient = WebChromeClient()
                 settings.javaScriptEnabled = true
-                addJavascriptInterface(WebAppInterface(context, this, mainViewModel, onBackButtonPressed), "Android")
+                addJavascriptInterface(
+                    WebAppInterface(
+                        context,
+                        this,
+                        mainViewModel,
+                        onBackButtonPressed,
+                        showDialogCallback = { show ->
+                            showDialog = show
+                        }), "Android"
+                )
                 loadUrl("file:///android_asset/index.html")
             }
         },
@@ -53,6 +104,13 @@ fun WebScreen(modifier: Modifier = Modifier, mainViewModel: MainViewModel, onBac
             .fillMaxSize()
             .padding(top = with(density) { getStatusBarHeight(context).toDp() })
     )
+
+    if (showDialog) {
+        ActionSheet(onDismiss = { showDialog = false }, takePhoto = {
+            println("take photo")
+            // Permission Request Logic
+        })
+    }
 }
 
 @SuppressLint("InternalInsetResource")
@@ -65,11 +123,41 @@ fun getStatusBarHeight(context: android.content.Context): Int {
     }
 }
 
+@Composable
+fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            shape = MaterialTheme.shapes.medium,
+            shadowElevation = 8.dp
+        ) {
+            Column {
+                Text(
+                    text = "Action 1",
+                    modifier = Modifier.padding(16.dp).clickable { takePhoto() }
+                )
+                Divider()
+                Text(
+                    text = "Action 2",
+                    modifier = Modifier.padding(16.dp)
+                )
+                Divider()
+                Text(
+                    text = "Cancel",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable { onDismiss() }
+                )
+            }
+        }
+    }
+}
+
 private class WebAppInterface(
     val context: Context,
     val webView: WebView,
     val viewModel: MainViewModel,
-    val onBackButtonPressed: () -> Boolean
+    val onBackButtonPressed: () -> Boolean,
+    val showDialogCallback: (Boolean) -> Unit
 ) {
     @JavascriptInterface
     fun showToast(message: String) {
@@ -79,6 +167,11 @@ private class WebAppInterface(
     @JavascriptInterface
     fun logMessage(message: String) {
         Log.d("WebAppInterface", message)
+    }
+
+    @JavascriptInterface
+    fun showActionSheet(show: Boolean) {
+        showDialogCallback(show)
     }
 
     @JavascriptInterface
@@ -96,5 +189,4 @@ private class WebAppInterface(
             webView.evaluateJavascript("javascript:$callback($jsonString);", null)
         }
     }
-
 }
