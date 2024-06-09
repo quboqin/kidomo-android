@@ -3,39 +3,84 @@
 <head>
     <title>WebView Bridge</title>
     <script type="text/javascript">
+        function goBack() {
+          // Create a JSON object
+          var jsonObject = {
+            action: "back",
+            data: {
+              source: "index.html",
+            },
+            callback: "callbackFromKotlin",
+          };
+          // Convert the JSON object to a string
+          var backString = JSON.stringify(jsonObject);
+
+          // Call the Android function with the JSON string as a parameter
+          Android.callFromJavascript(backString);
+        }
+
         function sendMessageToAndroid() {
-            Android.showToast("Hello from JavaScript!");
-            Android.logMessage("This is a log message from JavaScript.");
+          Android.showToast("Hello from JavaScript!");
+          Android.logMessage("This is a log message from JavaScript.");
         }
 
         function sendCredentialsToAndroid() {
-            // Get the values from the input fields
-            var username = document.getElementById('username').value;
-            var password = document.getElementById('password').value;
+          // Get the values from the input fields
+          var username = document.getElementById("username").value;
+          var password = document.getElementById("password").value;
 
-            // Create a JSON object
-            var jsonObject = {
-                action: "send_credentials",
-                data: {
-                    username: username,
-                    password: password
-                },
-                callback: "callbackFromKotlin"
-            };
+          // Create a JSON object
+          var jsonObject = {
+            action: "send_credentials",
+            data: {
+              username: username,
+              password: password,
+            },
+            callback: "callbackFromKotlin",
+          };
 
-            // Convert the JSON object to a string
-            var credentialsString = JSON.stringify(jsonObject);
+          // Convert the JSON object to a string
+          var credentialsString = JSON.stringify(jsonObject);
 
-            // Call the Android function with the JSON string as a parameter
-            Android.callFromJavascript(credentialsString);
+          // Call the Android function with the JSON string as a parameter
+          Android.callFromJavascript(credentialsString);
         }
 
         function callbackFromKotlin(jsonObject) {
-            alert(jsonObject.key1);
+          alert(jsonObject.key1);
         }
     </script>
+    <style>
+        body {
+          margin: 0;
+          font-family: Arial, sans-serif;
+        }
+        .navbar {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          background-color: #333;
+          color: white;
+          padding: 10px;
+        }
+        .navbar .back-button {
+          background-color: #444;
+          color: white;
+          border: none;
+          padding: 10px 20px;
+          cursor: pointer;
+          border-radius: 5px;
+        }
+        .navbar .back-button:hover {
+          background-color: #555;
+        }
+    </style>
 </head>
 <body>
+<div class="navbar">
+    <button class="back-button" onclick="goBack()">Back</button>
+    <h3>Navigation Bar</h3>
+</div>
 <h4>WebView Bridge Example</h4>
 <p>
     <input type="text" id="username" value="username" />

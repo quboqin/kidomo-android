@@ -50,7 +50,8 @@ fun SetupNavigation(
             })
         ) {
             WebScreen(
-                mainViewModel = mainViewModel
+                onBackButtonPressed = screen.onBackButtonPressed,
+                mainViewModel = mainViewModel,
             )
         }
     }

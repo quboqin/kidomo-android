@@ -18,6 +18,10 @@ class Screens(navController: NavHostController) {
         }
     }
 
+    val onBackButtonPressed: () -> Boolean = {
+        navController.popBackStack()
+    }
+
     val gotoWebView: (Int) -> Unit = { webId ->
         navController.navigate(route = "${AppHolder.WEBVIEW_BASE}$webId")
     }

@@ -2,13 +2,14 @@ package com.cosine.kidomo.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavHostController
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class MainViewModel(
 ) : ViewModel() {
 
-    fun nativeTask(arg: Map<String, Any>): String {
+    fun nativeTask(arg: Map<String, Any>, onBackButtonPressed: () -> Boolean): String {
         var jsonString: String = ""
         viewModelScope.launch {
             val action = arg["action"] as? String
@@ -22,6 +23,8 @@ class MainViewModel(
 
                 // 将 JSON 对象转换为字符串
                 jsonString = jsonObject.toString()
+            } else if (action == "back") {
+                onBackButtonPressed()
             }
         }
         return jsonString
