@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import com.cosine.kidomo.ui.screen.home.HomeScreen
+import com.cosine.kidomo.ui.screen.scan.ScannerScreen
 import com.cosine.kidomo.ui.screen.splash.Splash
 import com.cosine.kidomo.ui.screen.web.WebScreen
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
@@ -52,6 +53,15 @@ fun SetupNavigation(
             WebScreen(
                 onBackButtonPressed = screen.onBackButtonPressed,
                 mainViewModel = mainViewModel,
+                gotoScannerScreen = screen.gotoScannerScreen
+            )
+        }
+
+        composable(
+            route = AppHolder.SCANNER_SCREEN
+        ) {
+            ScannerScreen(
+                onBackButtonPressed = screen.onBackButtonPressed,
             )
         }
     }

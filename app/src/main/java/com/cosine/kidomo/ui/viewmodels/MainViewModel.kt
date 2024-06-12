@@ -9,7 +9,7 @@ import org.json.JSONObject
 class MainViewModel(
 ) : ViewModel() {
 
-    fun nativeTask(arg: Map<String, Any>, onBackButtonPressed: () -> Boolean): String {
+    fun nativeTask(arg: Map<String, Any>, onBackButtonPressed: () -> Unit): String {
         var jsonString: String = ""
         viewModelScope.launch {
             val action = arg["action"] as? String

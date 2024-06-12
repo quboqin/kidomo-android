@@ -51,6 +51,15 @@ android {
 }
 
 dependencies {
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+
+    implementation("com.google.accompanist:accompanist-permissions:0.23.1")
+    implementation(libs.coil.compose)
+    implementation(libs.face.detection)
+    implementation(libs.barcode.scanning)
+
     implementation(libs.androidx.appcompat)
     implementation(libs.gson)
 
@@ -64,6 +73,9 @@ dependencies {
     implementation(libs.firebase.messaging)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material3.android)
+    implementation(libs.androidx.exifinterface)
+    implementation(libs.play.services.mlkit.text.recognition.common)
+    implementation(libs.play.services.mlkit.text.recognition.chinese)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -40,14 +40,12 @@ fun Splash(
 ) {
     var start by remember { mutableStateOf(false) }
     val offset by animateDpAsState(
-        targetValue = if (start) 0.dp else 100.dp,
-        animationSpec = tween(
+        targetValue = if (start) 20.dp else 100.dp, animationSpec = tween(
             durationMillis = 1000
         ), label = ""
     )
     val alpha by animateFloatAsState(
-        targetValue = if (start) 1f else 0f,
-        animationSpec = tween(
+        targetValue = if (start) 1f else 0f, animationSpec = tween(
             durationMillis = 2000
         ), label = ""
     )
@@ -86,7 +84,7 @@ fun Splash(offsetState: Dp, alphaState: Float) {
                     .alpha(alpha = alphaState),
                 text = stringResource(id = R.string.app_name),
                 color = MaterialTheme.colorScheme.splashText,
-                style = MaterialTheme.typography.bodySmall,
+                style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.Bold,
                 maxLines = 1,
             )

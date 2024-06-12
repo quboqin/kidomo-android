@@ -42,12 +42,13 @@ import androidx.compose.runtime.LaunchedEffect
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SetJavaScriptEnabled")
 @Composable
 fun WebScreen(
-    onBackButtonPressed: () -> Boolean,
+    onBackButtonPressed: () -> Unit,
+    gotoScannerScreen: () -> Unit,
     mainViewModel: MainViewModel
 ) {
     Scaffold(
         content = { innerPadding ->
-            WebScreen(Modifier.padding(innerPadding), mainViewModel, onBackButtonPressed)
+            WebScreen(Modifier.padding(innerPadding), mainViewModel, onBackButtonPressed, gotoScannerScreen)
         }
     )
 }
@@ -56,7 +57,8 @@ fun WebScreen(
 fun WebScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
-    onBackButtonPressed: () -> Boolean
+    onBackButtonPressed: () -> Unit,
+    gotoScannerScreen: () -> Unit
 ) {
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
@@ -109,6 +111,7 @@ fun WebScreen(
         ActionSheet(onDismiss = { showDialog = false }, takePhoto = {
             println("take photo")
             // Permission Request Logic
+            gotoScannerScreen()
         })
     }
 }
@@ -132,7 +135,7 @@ fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit) {
         ) {
             Column {
                 Text(
-                    text = "Action 1",
+                    text = "take photo",
                     modifier = Modifier.padding(16.dp).clickable { takePhoto() }
                 )
                 Divider()
@@ -156,7 +159,7 @@ private class WebAppInterface(
     val context: Context,
     val webView: WebView,
     val viewModel: MainViewModel,
-    val onBackButtonPressed: () -> Boolean,
+    val onBackButtonPressed: () -> Unit,
     val showDialogCallback: (Boolean) -> Unit
 ) {
     @JavascriptInterface

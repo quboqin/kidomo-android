@@ -88,11 +88,11 @@ val ColorScheme.splashBackground: Color
 
 val ColorScheme.splashText: Color
     @Composable
-    get() = if (isLightTheme(this)) Color.White else Neutral8
+    get() = if (isLightTheme(this)) Neutral8 else Color.White
 
 val ColorScheme.topAppBarContent: Color
     @Composable
-    get() = if (isLightTheme(this)) Color.White else Neutral0
+    get() = if (isLightTheme(this)) Neutral0 else Color.White
 
 val ColorScheme.topAppBarBackground: Color
     @Composable

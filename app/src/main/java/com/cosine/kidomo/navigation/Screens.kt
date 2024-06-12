@@ -18,7 +18,11 @@ class Screens(navController: NavHostController) {
         }
     }
 
-    val onBackButtonPressed: () -> Boolean = {
+    val gotoScannerScreen: () ->Unit = {
+        navController.navigate(route = AppHolder.SCANNER_SCREEN)
+    }
+
+    val onBackButtonPressed: () -> Unit = {
         navController.popBackStack()
     }
 

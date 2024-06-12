@@ -7,6 +7,7 @@ object AppHolder {
 
     const val SPLASH_SCREEN = "splash"
     const val HOME_SCREEN = "home"
+    const val SCANNER_SCREEN = "scanner"
     const val WEBVIEW_BASE = "web view/"
     const val WEBVIEW_ARG_KEY = "webId"
     const val WEBVIEW_SCREEN = "${WEBVIEW_BASE}{${WEBVIEW_ARG_KEY}}"
