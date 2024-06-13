@@ -53,6 +53,17 @@
         function showActionSheet() {
             Android.showActionSheet(true)
         }
+
+        function nativeImageData(data) {
+            let imageString = data.imgData
+
+            var images = document.getElementById("images")
+            var img = document.createElement("img")
+            img.src= "data:image/png;base64,"+imageString
+            img.style.width = "128px"
+            img.style.height = "128px"
+            images.appendChild(img)
+        }
     </script>
     <style>
         body {
@@ -93,10 +104,13 @@
 <p>
     <input type="text" id="password" value="password" />
 </p>
-<button onclick="sendMessageToAndroid()">Send Message to Android</button>
-<button onclick="showActionSheet()">Show Action Sheet</button>
-<button onclick="sendCredentialsToAndroid()">
-    Send User Credentials to Android
-</button>
+<div>
+    <button onclick="sendCredentialsToAndroid()">
+        Send User Credentials to Android
+    </button>
+</div>
+<div><button onclick="sendMessageToAndroid()">Send Message to Android</button></div>
+<div><button onclick="showActionSheet()">Show Action Sheet</button></div>
+<div id="images"></div>
 </body>
 </html>

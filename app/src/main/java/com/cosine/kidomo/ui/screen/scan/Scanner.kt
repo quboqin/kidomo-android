@@ -23,20 +23,25 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
+import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun ScannerScreen(
-    onBackButtonPressed: () -> Unit
+    onBackButtonPressed: () -> Unit,
+    mainViewModel: MainViewModel
 ) {
+    val imageUri by mainViewModel.imageUri
     val context = LocalContext.current
 
     Scaffold(
@@ -63,7 +68,7 @@ fun ScannerScreen(
             {
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background) {
-                    var imageUri by remember { mutableStateOf(EMPTY_IMAGE_URI) }
+                    // var imageUri by remember { mutableStateOf(EMPTY_IMAGE_URI) }
                     if (imageUri != EMPTY_IMAGE_URI) {
                         Box() {
                             Image(
@@ -74,7 +79,7 @@ fun ScannerScreen(
                             Button(
                                 modifier = Modifier.align(Alignment.BottomCenter),
                                 onClick = {
-                                    imageUri = EMPTY_IMAGE_URI
+                                    mainViewModel.updateImageUri(EMPTY_IMAGE_URI)
                                 }
                             ) {
                                 Text("Remove image")
@@ -86,14 +91,14 @@ fun ScannerScreen(
                             GallerySelect(
                                 onImageUri = { uri ->
                                     showGallerySelect = false
-                                    imageUri = uri
+                                    mainViewModel.updateImageUri(uri)
                                 }
                             )
                         } else {
                             Box() {
                                 CameraCapture(
                                     onImageFile = { file ->
-                                        imageUri = file.toUri()
+                                        mainViewModel.updateImageUri(file.toUri())
                                     }
                                 )
                                 Button(

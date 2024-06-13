@@ -62,6 +62,7 @@ fun SetupNavigation(
         ) {
             ScannerScreen(
                 onBackButtonPressed = screen.onBackButtonPressed,
+                mainViewModel = mainViewModel
             )
         }
     }

@@ -29,15 +29,17 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.ui.window.Dialog
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.runtime.LaunchedEffect
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import androidx.compose.runtime.MutableState
+import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
+import android.util.Base64
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SetJavaScriptEnabled")
 @Composable
@@ -48,7 +50,12 @@ fun WebScreen(
 ) {
     Scaffold(
         content = { innerPadding ->
-            WebScreen(Modifier.padding(innerPadding), mainViewModel, onBackButtonPressed, gotoScannerScreen)
+            WebScreen(
+                Modifier.padding(innerPadding),
+                mainViewModel,
+                onBackButtonPressed,
+                gotoScannerScreen
+            )
         }
     )
 }
@@ -60,33 +67,19 @@ fun WebScreen(
     onBackButtonPressed: () -> Unit,
     gotoScannerScreen: () -> Unit
 ) {
+    val imageUri by mainViewModel.imageUri
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val density = LocalDensity.current
 
-    val requestCameraPermissionLauncher = rememberLauncherForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            Toast.makeText(context, "Camera Permission Granted", Toast.LENGTH_SHORT).show()
-        } else {
-            Toast.makeText(context, "Camera Permission Denied", Toast.LENGTH_SHORT).show()
-        }
-    }
-
-    LaunchedEffect(Unit) {
-        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED
-        ) {
-            // Request the camera permission
-            requestCameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-        }
-    }
-
     AndroidView(
         factory = { context ->
             WebView(context).apply {
-                webViewClient = WebViewClient()
+                webViewClient = object : WebViewClient() {
+                    override fun onPageFinished(view: WebView?, url: String?) {
+                        super.onPageFinished(view, url)
+                    }
+                }
                 webChromeClient = WebChromeClient()
                 settings.javaScriptEnabled = true
                 addJavascriptInterface(
@@ -112,8 +105,20 @@ fun WebScreen(
             println("take photo")
             // Permission Request Logic
             gotoScannerScreen()
-        })
+        }, imageUri = imageUri)
     }
+}
+
+fun encodeImageUriToBase64(context: Context, imageUri: Uri): String? {
+    val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
+    val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
+    inputStream?.close()
+
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
+
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
 
 @SuppressLint("InternalInsetResource")
@@ -127,7 +132,8 @@ fun getStatusBarHeight(context: android.content.Context): Int {
 }
 
 @Composable
-fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit) {
+fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit, imageUri: Uri) {
+    val context = LocalContext.current
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = MaterialTheme.shapes.medium,
@@ -136,12 +142,18 @@ fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit) {
             Column {
                 Text(
                     text = "take photo",
-                    modifier = Modifier.padding(16.dp).clickable { takePhoto() }
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable { takePhoto() }
                 )
                 Divider()
                 Text(
-                    text = "Action 2",
-                    modifier = Modifier.padding(16.dp)
+                    text = "send photo",
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .clickable {
+
+                        }
                 )
                 Divider()
                 Text(

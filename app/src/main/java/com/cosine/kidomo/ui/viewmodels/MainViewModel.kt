@@ -1,13 +1,22 @@
 package com.cosine.kidomo.ui.viewmodels
 
+import android.net.Uri
+import androidx.compose.runtime.MutableState
+import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
+import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 
 class MainViewModel(
 ) : ViewModel() {
+
+    val imageUri: MutableState<Uri> = mutableStateOf(EMPTY_IMAGE_URI)
+
+    fun updateImageUri(newImageUri: Uri)  {
+        imageUri.value = newImageUri
+    }
 
     fun nativeTask(arg: Map<String, Any>, onBackButtonPressed: () -> Unit): String {
         var jsonString: String = ""
