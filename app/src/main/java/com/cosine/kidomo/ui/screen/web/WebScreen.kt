@@ -40,13 +40,19 @@ import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import android.util.Base64
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
+import com.cosine.kidomo.util.AppHolder
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SetJavaScriptEnabled")
 @Composable
 fun WebScreen(
     onBackButtonPressed: () -> Unit,
     gotoScannerScreen: () -> Unit,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    navController: NavHostController
 ) {
     Scaffold(
         content = { innerPadding ->
@@ -54,7 +60,8 @@ fun WebScreen(
                 Modifier.padding(innerPadding),
                 mainViewModel,
                 onBackButtonPressed,
-                gotoScannerScreen
+                gotoScannerScreen,
+                navController
             )
         }
     )
@@ -65,12 +72,28 @@ fun WebScreen(
     modifier: Modifier = Modifier,
     mainViewModel: MainViewModel,
     onBackButtonPressed: () -> Unit,
-    gotoScannerScreen: () -> Unit
+    gotoScannerScreen: () -> Unit,
+    navController: NavHostController
 ) {
     val imageUri by mainViewModel.imageUri
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val density = LocalDensity.current
+
+    val currentBackStackEntry by navController.currentBackStackEntryAsState()
+    val previousBackStackEntry by remember {
+        derivedStateOf {
+            navController.previousBackStackEntry
+        }
+    }
+
+    LaunchedEffect(currentBackStackEntry) {
+        if (previousBackStackEntry?.destination?.route == AppHolder.SCANNER_SCREEN) {
+            // Handle the event when coming back from the second screen
+            // For example, you can show a toast or update some state
+            println("Returned from Scan Screen")
+        }
+    }
 
     AndroidView(
         factory = { context ->

@@ -53,7 +53,8 @@ fun SetupNavigation(
             WebScreen(
                 onBackButtonPressed = screen.onBackButtonPressed,
                 mainViewModel = mainViewModel,
-                gotoScannerScreen = screen.gotoScannerScreen
+                gotoScannerScreen = screen.gotoScannerScreen,
+                navController = navController
             )
         }
 
