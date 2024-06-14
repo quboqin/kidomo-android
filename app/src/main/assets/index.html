@@ -54,10 +54,10 @@
             Android.showActionSheet(true)
         }
 
-        function nativeImageData(imageString) {
+        function nativeImageData(data) {
             var images = document.getElementById("images")
             var img = document.createElement("img")
-            img.src= "data:image/png;base64,"+imageString
+            img.src= "data:image/png;base64,"+data.image
             img.style.width = "128px"
             img.style.height = "128px"
             images.appendChild(img)

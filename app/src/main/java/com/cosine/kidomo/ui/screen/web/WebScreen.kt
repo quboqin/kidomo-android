@@ -42,6 +42,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import org.apache.commons.text.StringEscapeUtils
+import org.json.JSONObject
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -125,11 +126,13 @@ fun WebView(
                         // Clear the result after handling it
                         savedStateHandle["resultKey"] = false
 
-                        val jsonString = encodeImageUriToBase64(context, imageUri).toString()
-                        val escapedJsonString = StringEscapeUtils.escapeEcmaScript(jsonString)
+                        val imageString = encodeImageUriToBase64(context, imageUri)
+                        val jsonObject = JSONObject()
+                        jsonObject.put("image", imageString)
+                        val jsonString = jsonObject.toString()
 
                         webView.post {
-                            webView.evaluateJavascript("javascript:nativeImageData($escapedJsonString);", null)
+                            webView.evaluateJavascript("javascript:nativeImageData($jsonString);", null)
                         }
                     }
                 }
