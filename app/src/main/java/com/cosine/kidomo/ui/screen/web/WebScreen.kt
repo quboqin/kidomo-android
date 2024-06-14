@@ -37,7 +37,9 @@ import android.net.Uri
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import android.util.Base64
-import com.cosine.kidomo.util.AppHolder
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -45,7 +47,8 @@ fun WebScreen(
     uriString: String,
     onBackButtonPressed: () -> Unit,
     gotoScannerScreen: () -> Unit,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel,
+    navController: NavHostController
 ) {
     Scaffold(
         content = { _ ->
@@ -53,7 +56,8 @@ fun WebScreen(
                 mainViewModel,
                 onBackButtonPressed,
                 gotoScannerScreen,
-                uriString
+                uriString,
+                navController
             )
         }
     )
@@ -65,16 +69,35 @@ fun WebView(
     mainViewModel: MainViewModel,
     onBackButtonPressed: () -> Unit,
     gotoScannerScreen: () -> Unit,
-    uriString: String
+    uriString: String,
+    navController: NavHostController
 ) {
     val imageUri by mainViewModel.imageUri
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val density = LocalDensity.current
+    var webView: WebView? = null
+
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val savedStateHandle = currentBackStackEntry?.savedStateHandle
+    val result = savedStateHandle?.getLiveData<Boolean>("resultKey")?.observeAsState()
+
+    result?.value?.let { event ->
+        if (event) {
+            // Clear the result after handling it
+            savedStateHandle["resultKey"] = false
+
+            val jsonString = encodeImageUriToBase64(context, imageUri)
+
+            webView?.post {
+                webView?.evaluateJavascript("javascript:nativeImageData($jsonString);", null)
+            }
+        }
+    }
 
     AndroidView(
         factory = { context ->
-            WebView(context).apply {
+            webView = WebView(context).apply {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
@@ -94,6 +117,7 @@ fun WebView(
                 )
                 loadUrl(uriString)
             }
+            webView!!
         },
         modifier = Modifier
             .fillMaxSize()

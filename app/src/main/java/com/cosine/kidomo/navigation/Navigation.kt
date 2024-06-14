@@ -56,6 +56,7 @@ fun SetupNavigation(
                 onBackButtonPressed = screen.onBackButtonPressed,
                 gotoScannerScreen = screen.gotoScannerScreen,
                 mainViewModel = mainViewModel,
+                navController = navController
             )
         }
 

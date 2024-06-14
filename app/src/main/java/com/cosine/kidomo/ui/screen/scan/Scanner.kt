@@ -25,7 +25,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
@@ -40,7 +39,6 @@ fun ScannerScreen(
     mainViewModel: MainViewModel
 ) {
     val imageUri by mainViewModel.imageUri
-    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -66,7 +64,6 @@ fun ScannerScreen(
             {
                 Surface(modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background) {
-                    // var imageUri by remember { mutableStateOf(EMPTY_IMAGE_URI) }
                     if (imageUri != EMPTY_IMAGE_URI) {
                         Box() {
                             Image(

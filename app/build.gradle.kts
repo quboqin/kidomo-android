@@ -63,6 +63,9 @@ dependencies {
     implementation(libs.androidx.appcompat)
     implementation(libs.gson)
 
+    implementation(libs.androidx.lifecycle.runtime.ktx.v231)
+    implementation(libs.androidx.runtime.livedata)
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

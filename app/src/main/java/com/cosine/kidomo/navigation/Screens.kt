@@ -23,6 +23,7 @@ class Screens(navController: NavHostController) {
     }
 
     val onBackButtonPressed: () -> Unit = {
+        navController.previousBackStackEntry?.savedStateHandle?.set("resultKey", true)
         navController.popBackStack()
     }
 
