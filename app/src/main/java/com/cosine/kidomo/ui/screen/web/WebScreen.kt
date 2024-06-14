@@ -79,6 +79,7 @@ fun WebView(
     val context = LocalContext.current
     val density = LocalDensity.current
     val webViewState = remember { mutableStateOf<WebView?>(null) }
+    val isWebViewLoaded = remember { mutableStateOf(false) }
 
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val savedStateHandle = currentBackStackEntry?.savedStateHandle
@@ -86,10 +87,12 @@ fun WebView(
 
     AndroidView(
         factory = { context ->
+            isWebViewLoaded.value = false
             WebView(context).apply {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
+                        isWebViewLoaded.value = true
                     }
                 }
                 webChromeClient = WebChromeClient()
@@ -114,18 +117,20 @@ fun WebView(
         webViewState.value = webView
     }
 
-    LaunchedEffect(webViewState.value, result?.value) {
+    LaunchedEffect(webViewState.value, result?.value, isWebViewLoaded.value) {
         webViewState.value?.let { webView ->
-            result?.value?.let { event ->
-                if (event) {
-                    // Clear the result after handling it
-                    savedStateHandle["resultKey"] = false
+            isWebViewLoaded.value.let { loaded ->
+                result?.value?.let { event ->
+                    if (event) {
+                        // Clear the result after handling it
+                        savedStateHandle["resultKey"] = false
 
-                    val jsonString = encodeImageUriToBase64(context, imageUri).toString()
-                    val escapedJsonString = StringEscapeUtils.escapeEcmaScript(jsonString)
+                        val jsonString = encodeImageUriToBase64(context, imageUri).toString()
+                        val escapedJsonString = StringEscapeUtils.escapeEcmaScript(jsonString)
 
-                    webView.post {
-                        webView.evaluateJavascript("javascript:nativeImageData($escapedJsonString);", null)
+                        webView.post {
+                            webView.evaluateJavascript("javascript:nativeImageData($escapedJsonString);", null)
+                        }
                     }
                 }
             }
