@@ -54,9 +54,7 @@
             Android.showActionSheet(true)
         }
 
-        function nativeImageData(data) {
-            let imageString = data.imgData
-
+        function nativeImageData(imageString) {
             var images = document.getElementById("images")
             var img = document.createElement("img")
             img.src= "data:image/png;base64,"+imageString

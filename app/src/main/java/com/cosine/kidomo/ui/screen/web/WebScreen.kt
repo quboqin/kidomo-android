@@ -37,9 +37,11 @@ import android.net.Uri
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import android.util.Base64
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import org.apache.commons.text.StringEscapeUtils
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -76,28 +78,15 @@ fun WebView(
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val density = LocalDensity.current
-    var webView: WebView? = null
+    val webViewState = remember { mutableStateOf<WebView?>(null) }
 
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val savedStateHandle = currentBackStackEntry?.savedStateHandle
     val result = savedStateHandle?.getLiveData<Boolean>("resultKey")?.observeAsState()
 
-    result?.value?.let { event ->
-        if (event) {
-            // Clear the result after handling it
-            savedStateHandle["resultKey"] = false
-
-            val jsonString = encodeImageUriToBase64(context, imageUri)
-
-            webView?.post {
-                webView?.evaluateJavascript("javascript:nativeImageData($jsonString);", null)
-            }
-        }
-    }
-
     AndroidView(
         factory = { context ->
-            webView = WebView(context).apply {
+            WebView(context).apply {
                 webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
@@ -117,12 +106,31 @@ fun WebView(
                 )
                 loadUrl(uriString)
             }
-            webView!!
         },
         modifier = Modifier
             .fillMaxSize()
             .padding(top = with(density) { getStatusBarHeight(context).toDp() })
-    )
+    ) { webView ->
+        webViewState.value = webView
+    }
+
+    LaunchedEffect(webViewState.value, result?.value) {
+        webViewState.value?.let { webView ->
+            result?.value?.let { event ->
+                if (event) {
+                    // Clear the result after handling it
+                    savedStateHandle["resultKey"] = false
+
+                    val jsonString = encodeImageUriToBase64(context, imageUri).toString()
+                    val escapedJsonString = StringEscapeUtils.escapeEcmaScript(jsonString)
+
+                    webView.post {
+                        webView.evaluateJavascript("javascript:nativeImageData($escapedJsonString);", null)
+                    }
+                }
+            }
+        }
+    }
 
     if (showDialog) {
         ActionSheet(onDismiss = { showDialog = false }, takePhoto = {

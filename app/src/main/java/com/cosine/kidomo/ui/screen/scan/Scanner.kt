@@ -2,6 +2,7 @@ package com.cosine.kidomo.ui.screen.scan
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -25,10 +26,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
+import com.cosine.kidomo.util.getImageUriFromBitmap
+import com.cosine.kidomo.util.resizeImage
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
@@ -39,6 +43,7 @@ fun ScannerScreen(
     mainViewModel: MainViewModel
 ) {
     val imageUri by mainViewModel.imageUri
+    val context = LocalContext.current
 
     Scaffold(
         topBar = {
@@ -93,7 +98,11 @@ fun ScannerScreen(
                             Box() {
                                 CameraCapture(
                                     onImageFile = { file ->
-                                        mainViewModel.updateImageUri(file.toUri())
+                                        val bitmap = BitmapFactory.decodeFile(file.absolutePath)
+                                        val resizedImage = resizeImage(bitmap, 200, 200)
+                                        // Convert the resized image to a URI and update the image URI
+                                        val resizedImageUri = getImageUriFromBitmap(context, resizedImage)
+                                        mainViewModel.updateImageUri(resizedImageUri)
                                     }
                                 )
                                 Button(

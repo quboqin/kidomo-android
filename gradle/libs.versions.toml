@@ -5,6 +5,7 @@ appcompat = "1.7.0"
 barcodeScanning = "17.2.0"
 cameraCamera2 = "1.2.0-alpha04"
 coilCompose = "2.0.0"
+commonsText = "1.9"
 coreKtxVersion = "1.6.0"
 faceDetection = "16.1.6"
 gson = "2.10.1"
@@ -39,6 +40,7 @@ androidx-lifecycle-runtime-ktx-v231 = { module = "androidx.lifecycle:lifecycle-r
 androidx-runtime-livedata = { module = "androidx.compose.runtime:runtime-livedata", version.ref = "runtimeLivedata" }
 barcode-scanning = { module = "com.google.mlkit:barcode-scanning", version.ref = "barcodeScanning" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coilCompose" }
+commons-text = { module = "org.apache.commons:commons-text", version.ref = "commonsText" }
 face-detection = { module = "com.google.mlkit:face-detection", version.ref = "faceDetection" }
 google-accompanist-permissions = { module = "com.google.accompanist:accompanist-permissions", version.ref = "accompanistPermissions" }
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }
