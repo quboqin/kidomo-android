@@ -1,6 +1,5 @@
 package com.cosine.kidomo.ui.screen.home
 
-import android.text.Layout
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -10,10 +9,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cosine.kidomo.util.AppHolder
 
 @Composable
 fun HomeContent(
-    gotoWebView: (taskId: Int) -> Unit
+    gotoWebView: (isLocal: Boolean) -> Unit
 ) {
     Box(
         contentAlignment = Alignment.Center,
@@ -21,11 +21,11 @@ fun HomeContent(
     ) {
         Button(
             onClick = {
-                gotoWebView(1)
+                gotoWebView(AppHolder.IS_LOCAL_URI)
             },
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "Click Me")
+            Text(text = "Goto Web Page")
         }
     }
 

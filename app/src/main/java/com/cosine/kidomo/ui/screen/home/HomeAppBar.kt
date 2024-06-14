@@ -20,10 +20,14 @@ fun HomeTopAppBar(
     TopAppBar(
         title = {
             Text(
-                text = stringResource(id = R.string.home),
-                color = MaterialTheme.colorScheme.topAppBarContent
+                text = stringResource(id = R.string.home)
             )
-        }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primary, // Background color
+            titleContentColor = MaterialTheme.colorScheme.onPrimary // Title text color
+        )
+
     )
 }
 

@@ -26,7 +26,7 @@ class Screens(navController: NavHostController) {
         navController.popBackStack()
     }
 
-    val gotoWebView: (Int) -> Unit = { webId ->
-        navController.navigate(route = "${AppHolder.WEBVIEW_BASE}$webId")
+    val gotoWebView: (Boolean) -> Unit = { isLocalUri ->
+        navController.navigate(route = "${AppHolder.WEBVIEW_BASE}$isLocalUri")
     }
 }

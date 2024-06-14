@@ -25,6 +25,8 @@ class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
     private val mainViewModel: MainViewModel by viewModels()
 
+    private val TAG = "MainActivity"
+
     // Declare the launcher at the top of your Activity/Fragment:
     private val requestPermissionLauncher = registerForActivityResult(
         ActivityResultContracts.RequestPermission(),
@@ -56,8 +58,6 @@ class MainActivity : ComponentActivity() {
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        var TAG = "MainActivity"
-
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         FirebaseApp.initializeApp(this)

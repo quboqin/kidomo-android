@@ -39,21 +39,23 @@ fun SetupNavigation(
             route = AppHolder.HOME_SCREEN
         ) {
             HomeScreen(
-                gotoWebView = screen.gotoWebView,
-                mainViewModel = mainViewModel
+                gotoWebView = screen.gotoWebView
             )
         }
 
         composable(
             route = AppHolder.WEBVIEW_SCREEN,
             arguments = listOf(navArgument(AppHolder.WEBVIEW_ARG_KEY) {
-                type = NavType.IntType
+                type = NavType.BoolType
             })
-        ) {
+        ) {backStackEntry ->
+            val webViewArg = backStackEntry.arguments?.getBoolean(AppHolder.WEBVIEW_ARG_KEY) ?: AppHolder.IS_LOCAL_URI
+            val uriString = if (webViewArg) AppHolder.LOCAL_URI else AppHolder.REMOTE_URI
             WebScreen(
+                uriString = uriString,
                 onBackButtonPressed = screen.onBackButtonPressed,
+                gotoScannerScreen = screen.gotoScannerScreen,
                 mainViewModel = mainViewModel,
-                gotoScannerScreen = screen.gotoScannerScreen
             )
         }
 

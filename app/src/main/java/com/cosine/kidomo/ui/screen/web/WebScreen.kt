@@ -2,7 +2,6 @@ package com.cosine.kidomo.ui.screen.web
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -35,37 +34,38 @@ import com.google.gson.reflect.TypeToken
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
-import androidx.compose.runtime.MutableState
-import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
 import android.util.Base64
+import com.cosine.kidomo.util.AppHolder
 
-@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter", "SetJavaScriptEnabled")
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun WebScreen(
+    uriString: String,
     onBackButtonPressed: () -> Unit,
     gotoScannerScreen: () -> Unit,
     mainViewModel: MainViewModel
 ) {
     Scaffold(
-        content = { innerPadding ->
-            WebScreen(
-                Modifier.padding(innerPadding),
+        content = { _ ->
+            WebView(
                 mainViewModel,
                 onBackButtonPressed,
-                gotoScannerScreen
+                gotoScannerScreen,
+                uriString
             )
         }
     )
 }
 
+@SuppressLint("SetJavaScriptEnabled")
 @Composable
-fun WebScreen(
-    modifier: Modifier = Modifier,
+fun WebView(
     mainViewModel: MainViewModel,
     onBackButtonPressed: () -> Unit,
-    gotoScannerScreen: () -> Unit
+    gotoScannerScreen: () -> Unit,
+    uriString: String
 ) {
     val imageUri by mainViewModel.imageUri
     var showDialog by remember { mutableStateOf(false) }
@@ -92,7 +92,7 @@ fun WebScreen(
                             showDialog = show
                         }), "Android"
                 )
-                loadUrl("file:///android_asset/index.html")
+                loadUrl(uriString)
             }
         },
         modifier = Modifier
@@ -103,7 +103,6 @@ fun WebScreen(
     if (showDialog) {
         ActionSheet(onDismiss = { showDialog = false }, takePhoto = {
             println("take photo")
-            // Permission Request Logic
             gotoScannerScreen()
         }, imageUri = imageUri)
     }
