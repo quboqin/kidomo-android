@@ -11,7 +11,6 @@ object AppHolder {
     const val WEBVIEW_SCREEN = "${WEBVIEW_BASE}{${WEBVIEW_ARG_KEY}}"
 
     const val IS_LOCAL_URI = true
-
     const val LOCAL_URI = "file:///android_asset/index.html"
     const val REMOTE_URI = "https://www.google.com"
 }
