@@ -187,15 +187,6 @@ fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit, imageUri: Uri) {
                 )
                 Divider()
                 Text(
-                    text = "send photo",
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .clickable {
-
-                        }
-                )
-                Divider()
-                Text(
                     text = "Cancel",
                     modifier = Modifier
                         .padding(16.dp)

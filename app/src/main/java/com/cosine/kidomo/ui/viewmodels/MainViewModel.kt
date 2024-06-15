@@ -30,7 +30,6 @@ class MainViewModel(
                 jsonObject.put("key2", 12345)
                 jsonObject.put("key3", true)
 
-                // 将 JSON 对象转换为字符串
                 jsonString = jsonObject.toString()
             } else if (action == "back") {
                 onBackButtonPressed()
