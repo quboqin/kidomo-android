@@ -41,8 +41,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
 import org.apache.commons.text.StringEscapeUtils
 import org.json.JSONObject
+import com.cosine.kidomo.util.encodeImageUriToBase64
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -122,7 +124,7 @@ fun WebView(
         webViewState.value?.let { webView ->
             isWebViewLoaded.value.let { loaded ->
                 result?.value?.let { event ->
-                    if (event) {
+                    if (event && imageUri != EMPTY_IMAGE_URI) {
                         // Clear the result after handling it
                         savedStateHandle["resultKey"] = false
 
@@ -146,18 +148,6 @@ fun WebView(
             gotoScannerScreen()
         }, imageUri = imageUri)
     }
-}
-
-fun encodeImageUriToBase64(context: Context, imageUri: Uri): String? {
-    val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
-    val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
-    inputStream?.close()
-
-    val byteArrayOutputStream = ByteArrayOutputStream()
-    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
-    val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
-
-    return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }
 
 @SuppressLint("InternalInsetResource")

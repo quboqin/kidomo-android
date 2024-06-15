@@ -55,7 +55,7 @@ dependencies {
     implementation(libs.androidx.camera.lifecycle)
     implementation(libs.androidx.camera.view)
 
-    implementation("com.google.accompanist:accompanist-permissions:0.23.1")
+    implementation(libs.accompanist.permissions.v0231)
     implementation(libs.coil.compose)
     implementation(libs.face.detection)
     implementation(libs.barcode.scanning)

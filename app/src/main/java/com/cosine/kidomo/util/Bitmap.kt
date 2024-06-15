@@ -5,9 +5,12 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.net.Uri
+import android.util.Base64
+import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.io.InputStream
 
 @Throws(IOException::class)
 fun getImageUriFromBitmap(context: Context, bitmap: Bitmap): Uri {
@@ -44,22 +47,14 @@ fun resizeImage(bitmap: Bitmap, reqWidth: Int, reqHeight: Int): Bitmap {
     return Bitmap.createBitmap(bitmap, 0, 0, width, height, matrix, false)
 }
 
-fun calculateInSampleSize(options: BitmapFactory.Options, reqWidth: Int, reqHeight: Int): Int {
-    // Raw height and width of image
-    val (height: Int, width: Int) = options.run { outHeight to outWidth }
-    var inSampleSize = 1
+fun encodeImageUriToBase64(context: Context, imageUri: Uri): String? {
+    val inputStream: InputStream? = context.contentResolver.openInputStream(imageUri)
+    val bitmap: Bitmap = BitmapFactory.decodeStream(inputStream)
+    inputStream?.close()
 
-    if (height > reqHeight || width > reqWidth) {
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream)
+    val byteArray: ByteArray = byteArrayOutputStream.toByteArray()
 
-        val halfHeight: Int = height / 2
-        val halfWidth: Int = width / 2
-
-        // Calculate the largest inSampleSize value that is a power of 2 and keeps both
-        // height and width larger than the requested height and width.
-        while (halfHeight / inSampleSize >= reqHeight && halfWidth / inSampleSize >= reqWidth) {
-            inSampleSize *= 2
-        }
-    }
-
-    return inSampleSize
+    return Base64.encodeToString(byteArray, Base64.DEFAULT)
 }

@@ -32,7 +32,9 @@ class MainViewModel(
 
             jsonString = jsonObject.toString()
         } else if (action == "back") {
-            onBackButtonPressed()
+            viewModelScope.launch {
+                onBackButtonPressed()
+            }
         }
 
         return jsonString

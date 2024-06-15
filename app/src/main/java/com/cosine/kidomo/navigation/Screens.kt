@@ -4,6 +4,8 @@ import androidx.navigation.NavHostController
 import com.cosine.kidomo.util.AppHolder
 import com.cosine.kidomo.util.AppHolder.HOME_SCREEN
 import com.cosine.kidomo.util.AppHolder.SPLASH_SCREEN
+import com.cosine.kidomo.util.AppHolder.WEBVIEW_SCREEN
+import com.cosine.kidomo.util.AppHolder.SCANNER_SCREEN
 
 class Screens(navController: NavHostController) {
     val gotoHomeFromSplash: () -> Unit = {
@@ -19,7 +21,9 @@ class Screens(navController: NavHostController) {
     }
 
     val gotoScannerScreen: () ->Unit = {
-        navController.navigate(route = AppHolder.SCANNER_SCREEN)
+        navController.navigate(route = SCANNER_SCREEN) {
+            popUpTo(SCANNER_SCREEN) { inclusive = true }
+        }
     }
 
     val onBackButtonPressed: () -> Unit = {
@@ -28,6 +32,8 @@ class Screens(navController: NavHostController) {
     }
 
     val gotoWebView: (Boolean) -> Unit = { isLocalUri ->
-        navController.navigate(route = "${AppHolder.WEBVIEW_BASE}$isLocalUri")
+        navController.navigate(route = "${AppHolder.WEBVIEW_BASE}$isLocalUri") {
+            popUpTo(WEBVIEW_SCREEN) { inclusive = true }
+        }
     }
 }
