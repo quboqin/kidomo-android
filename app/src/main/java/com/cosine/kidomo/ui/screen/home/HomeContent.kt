@@ -1,6 +1,8 @@
 package com.cosine.kidomo.ui.screen.home
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
@@ -19,13 +21,27 @@ fun HomeContent(
         contentAlignment = Alignment.Center,
         modifier = Modifier.fillMaxSize()
     ) {
-        Button(
-            onClick = {
-                gotoWebView(AppHolder.IS_LOCAL_URI)
-            },
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
             modifier = Modifier.padding(16.dp)
         ) {
-            Text(text = "Goto Web Page")
+            Button(
+                onClick = {
+                    gotoWebView(AppHolder.IS_LOCAL_URI)
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(text = "Goto Local Web Page")
+            }
+            Button(
+                onClick = {
+                    gotoWebView(false)
+                },
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(text = "Goto Remote Web Page")
+            }
         }
     }
 

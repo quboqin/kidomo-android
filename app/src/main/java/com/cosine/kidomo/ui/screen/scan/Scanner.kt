@@ -98,7 +98,10 @@ fun ScannerScreen(
                                 }
                             }
                         } else {
-                            Box() {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
                                 CameraCapture(
                                     onImageFile = { file ->
                                         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
@@ -110,7 +113,7 @@ fun ScannerScreen(
                                     }
                                 )
                                 Button(
-                                    modifier = Modifier.align(Alignment.BottomStart).padding(MEDIUM_PADDING),
+                                    modifier = Modifier.align(Alignment.Center).padding(MEDIUM_PADDING),
                                     onClick = {
                                         showGallerySelect = true
                                     }

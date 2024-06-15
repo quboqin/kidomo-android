@@ -31,18 +31,12 @@ import androidx.compose.ui.window.Dialog
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.net.Uri
-import java.io.ByteArrayOutputStream
-import java.io.InputStream
-import android.util.Base64
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
-import org.apache.commons.text.StringEscapeUtils
 import org.json.JSONObject
 import com.cosine.kidomo.util.encodeImageUriToBase64
 
