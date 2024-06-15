@@ -65,6 +65,8 @@ dependencies {
 
     implementation(libs.commons.text)
 
+    implementation(libs.okhttp)
+
     implementation(libs.androidx.lifecycle.runtime.ktx.v231)
     implementation(libs.androidx.runtime.livedata)
 

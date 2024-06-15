@@ -37,8 +37,11 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
+import com.cosine.kidomo.ui.viewmodels.Header
+import com.cosine.kidomo.ui.viewmodels.PreferenceHelper
 import org.json.JSONObject
 import com.cosine.kidomo.util.encodeImageUriToBase64
+import org.json.JSONException
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -201,6 +204,38 @@ private class WebAppInterface(
     @JavascriptInterface
     fun showActionSheet(show: Boolean) {
         showDialogCallback(show)
+    }
+
+    @JavascriptInterface
+    fun saveHeader(data: String) {
+        try {
+            // 将 data 字符串转换为 JSONObject
+            val jsonObject = JSONObject(data)
+
+            // 从 JSONObject 中安全地获取 BladeAuth 和 Authorization 的值
+            val bladeAuth = jsonObject.optString("BladeAuth", "")
+            val authorization = jsonObject.optString("Authorization", "")
+
+            // 创建 HeaderPreferenceHelper 实例
+            val headerPreferenceHelper = PreferenceHelper<Header>(context, "MyPreferences", "HeaderKey")
+
+            // 创建 Header 对象
+            val header = Header(bladeAuth, authorization)
+
+            // 存储 Header 对象
+            headerPreferenceHelper.saveObject(header)
+
+            // 从 SharedPreferences 获取 Header 对象
+            val retrievedHeader: Header? = headerPreferenceHelper.getObject(Header::class.java)
+
+            // 打印获取到的对象
+            retrievedHeader?.let {
+                println("BladeAuth: ${it.BladeAuth}, Authorization: ${it.Authorization}")
+            }
+        } catch (e: JSONException) {
+            // JSON 解析错误处理
+            e.printStackTrace()
+        }
     }
 
     @JavascriptInterface
