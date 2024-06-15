@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Kidomo</string>
+    <string name="kidomo_logo">App Logo</string>
+    <string name="delete_all_tasks">删除所有任务?</string>
+    <string name="delete_all_tasks_confirmation">你确定要删除所有任务吗？删除后无法恢复！</string>
+    <string name="home">Home</string>
     <string name="delete_all_action">清空任务</string>
+    <string name="no">取消</string>
+    <string name="yes">确定</string>
 </resources>

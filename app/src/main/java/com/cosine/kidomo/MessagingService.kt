@@ -4,7 +4,7 @@ import android.util.Log
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 class MessagingService: FirebaseMessagingService() {
-    var TAG = "MesaggingService"
+    private var TAG = "MessagingService"
     override fun onNewToken(token: String) {
         Log.d(TAG, "Refreshed token: $token")
 
@@ -16,7 +16,7 @@ class MessagingService: FirebaseMessagingService() {
 
     override fun onMessageReceived(message: RemoteMessage) {
         Log.d(TAG, "Notification Message Body: " + message.notification!!.body)
-        if (message.data.size > 0) {
+        if (message.data.isNotEmpty()) {
             Log.d(TAG, "Message Data payload: " + message.data)
         }
     }
