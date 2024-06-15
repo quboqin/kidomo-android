@@ -30,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
 import coil.compose.rememberAsyncImagePainter
+import com.cosine.kidomo.ui.theme.MEDIUM_PADDING
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.cosine.kidomo.util.getImageUriFromBitmap
 import com.cosine.kidomo.util.resizeImage
@@ -67,33 +68,35 @@ fun ScannerScreen(
                 modifier = Modifier.fillMaxSize()
             )
             {
-                Surface(modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background) {
-                    if (imageUri != EMPTY_IMAGE_URI) {
-                        Box() {
-                            Image(
-                                modifier = Modifier.fillMaxSize(),
-                                painter = rememberAsyncImagePainter(imageUri),
-                                contentDescription = "Captured image"
-                            )
-                            Button(
-                                modifier = Modifier.align(Alignment.BottomCenter),
-                                onClick = {
-                                    mainViewModel.updateImageUri(EMPTY_IMAGE_URI)
-                                }
-                            ) {
-                                Text("Remove image")
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.background
+                ) {
+                    var showGallerySelect by remember { mutableStateOf(false) }
+                    if (showGallerySelect) {
+                        GallerySelect(
+                            onImageUri = { uri ->
+                                showGallerySelect = false
+                                mainViewModel.updateImageUri(uri)
                             }
-                        }
+                        )
                     } else {
-                        var showGallerySelect by remember { mutableStateOf(false) }
-                        if (showGallerySelect) {
-                            GallerySelect(
-                                onImageUri = { uri ->
-                                    showGallerySelect = false
-                                    mainViewModel.updateImageUri(uri)
+                        if (imageUri != EMPTY_IMAGE_URI) {
+                            Box() {
+                                Image(
+                                    modifier = Modifier.fillMaxSize(),
+                                    painter = rememberAsyncImagePainter(imageUri),
+                                    contentDescription = "Captured image"
+                                )
+                                Button(
+                                    modifier = Modifier.align(Alignment.BottomCenter),
+                                    onClick = {
+                                        mainViewModel.updateImageUri(EMPTY_IMAGE_URI)
+                                    }
+                                ) {
+                                    Text("Remove image")
                                 }
-                            )
+                            }
                         } else {
                             Box() {
                                 CameraCapture(
@@ -101,14 +104,13 @@ fun ScannerScreen(
                                         val bitmap = BitmapFactory.decodeFile(file.absolutePath)
                                         val resizedImage = resizeImage(bitmap, 200, 200)
                                         // Convert the resized image to a URI and update the image URI
-                                        val resizedImageUri = getImageUriFromBitmap(context, resizedImage)
+                                        val resizedImageUri =
+                                            getImageUriFromBitmap(context, resizedImage)
                                         mainViewModel.updateImageUri(resizedImageUri)
                                     }
                                 )
                                 Button(
-                                    modifier = Modifier
-                                        .align(Alignment.TopCenter)
-                                        .padding(4.dp),
+                                    modifier = Modifier.align(Alignment.BottomStart).padding(MEDIUM_PADDING),
                                     onClick = {
                                         showGallerySelect = true
                                     }
