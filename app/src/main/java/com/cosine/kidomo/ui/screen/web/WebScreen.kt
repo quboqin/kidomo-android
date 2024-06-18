@@ -209,31 +209,22 @@ private class WebAppInterface(
     @JavascriptInterface
     fun saveHeader(data: String) {
         try {
-            // 将 data 字符串转换为 JSONObject
             val jsonObject = JSONObject(data)
 
-            // 从 JSONObject 中安全地获取 BladeAuth 和 Authorization 的值
-            val bladeAuth = jsonObject.optString("BladeAuth", "")
-            val authorization = jsonObject.optString("Authorization", "")
+            val bladeAuth = jsonObject.optString("bladeAuth", "")
+            val authorization = jsonObject.optString("authorization", "")
 
-            // 创建 HeaderPreferenceHelper 实例
-            val headerPreferenceHelper = PreferenceHelper<Header>(context, "MyPreferences", "HeaderKey")
+            val headerPreferenceHelper = PreferenceHelper<Header>(context, "KidomoPreferences", "HeaderKey")
 
-            // 创建 Header 对象
             val header = Header(bladeAuth, authorization)
 
-            // 存储 Header 对象
             headerPreferenceHelper.saveObject(header)
 
-            // 从 SharedPreferences 获取 Header 对象
             val retrievedHeader: Header? = headerPreferenceHelper.getObject(Header::class.java)
-
-            // 打印获取到的对象
             retrievedHeader?.let {
-                println("BladeAuth: ${it.BladeAuth}, Authorization: ${it.Authorization}")
+                Log.d("WebAppInterface", "BladeAuth: ${it.BladeAuth}, Authorization: ${it.Authorization}")
             }
         } catch (e: JSONException) {
-            // JSON 解析错误处理
             e.printStackTrace()
         }
     }

@@ -19,6 +19,19 @@
           Android.callFromJavascript(backString);
         }
 
+        function saveHeader() {
+          // Create a JSON object
+          var jsonObject = {
+            bladeAuth: "bladeAuth",
+            authorization: "authorization"
+          };
+          // Convert the JSON object to a string
+          var authString = JSON.stringify(jsonObject);
+
+          // Call the Android function with the JSON string as a parameter
+          Android.saveHeader(authString);
+        }
+
         function sendMessageToAndroid() {
           Android.showToast("Hello from JavaScript!");
           Android.logMessage("This is a log message from JavaScript.");
@@ -105,6 +118,11 @@
 <div>
     <button onclick="sendCredentialsToAndroid()">
         Send User Credentials to Android
+    </button>
+</div>
+<div>
+    <button onclick="saveHeader()">
+        Save Auth Header to Android
     </button>
 </div>
 <div><button onclick="sendMessageToAndroid()">Send Message to Android</button></div>

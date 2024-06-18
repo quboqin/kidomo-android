@@ -7,15 +7,12 @@ import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import okhttp3.Call
 import okhttp3.Callback
-import okhttp3.MediaType
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.OkHttpClient
 import okhttp3.Request
-import okhttp3.RequestBody
 import okhttp3.Response
 import java.io.IOException
 
-class MessagingService: FirebaseMessagingService() {
+class MessagingService : FirebaseMessagingService() {
     private var TAG = "MessagingService"
     override fun onNewToken(token: String) {
         Log.d(TAG, "Refreshed token: $token")
@@ -25,16 +22,11 @@ class MessagingService: FirebaseMessagingService() {
         // FCM registration token to your app server.
         // sendRegistrationToServer(token)
 
-        val headerPreferenceHelper = PreferenceHelper<Header>(this, "MyPreferences", "HeaderKey")
-        // 从 SharedPreferences 获取 Header 对象
+        val headerPreferenceHelper =
+            PreferenceHelper<Header>(this, "KidomoPreferences", "HeaderKey")
         val retrievedHeader: Header? = headerPreferenceHelper.getObject(Header::class.java)
 
         val client = OkHttpClient()
-
-        val requestBody = RequestBody.create(
-            "application/json; charset=utf-8".toMediaTypeOrNull(),
-            "{\"token\":\"$token\"}"
-        )
 
         val request = Request.Builder()
             .url("https://saas-test.opsfast.com/api/blade-common/firebase-token/update-token")
@@ -44,7 +36,12 @@ class MessagingService: FirebaseMessagingService() {
                 "Authorization",
                 retrievedHeader?.Authorization ?: "Basic cmlkZXI6c2Fhc19wcm9kX3NlY3JldA=="
             )
-            .post(requestBody)
+            .post(
+                okhttp3.FormBody.Builder()
+                    .add("platform", "android")
+                    .add("token", token)
+                    .build()
+            )
             .build()
 
         client.newCall(request).enqueue(object : Callback {
