@@ -1,132 +1,15 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>WebView Bridge</title>
-    <script type="text/javascript">
-        function goBack() {
-          // Create a JSON object
-          var jsonObject = {
-            action: "back",
-            data: {
-              source: "index.html",
-            },
-            callback: "callbackFromKotlin",
-          };
-          // Convert the JSON object to a string
-          var backString = JSON.stringify(jsonObject);
-
-          // Call the Android function with the JSON string as a parameter
-          Android.callFromJavascript(backString);
-        }
-
-        function saveHeader() {
-          // Create a JSON object
-          var jsonObject = {
-            bladeAuth: "bladeAuth_xxx",
-            authorization: "authorization_xxx"
-          };
-          // Convert the JSON object to a string
-          var authString = JSON.stringify(jsonObject);
-
-          // Call the Android function with the JSON string as a parameter
-          Android.saveHeader(authString);
-        }
-
-        function sendMessageToAndroid() {
-          Android.showToast("Hello from JavaScript!");
-          Android.logMessage("This is a log message from JavaScript.");
-        }
-
-        function sendCredentialsToAndroid() {
-          // Get the values from the input fields
-          var username = document.getElementById("username").value;
-          var password = document.getElementById("password").value;
-
-          // Create a JSON object
-          var jsonObject = {
-            action: "send_credentials",
-            data: {
-              username: username,
-              password: password,
-            },
-            callback: "callbackFromKotlin",
-          };
-
-          // Convert the JSON object to a string
-          var credentialsString = JSON.stringify(jsonObject);
-
-          // Call the Android function with the JSON string as a parameter
-          Android.callFromJavascript(credentialsString);
-        }
-
-        function callbackFromKotlin(jsonObject) {
-          alert(jsonObject.key1);
-        }
-
-        function showActionSheet() {
-            Android.showActionSheet(true)
-        }
-
-        function nativeImageData(data) {
-            var images = document.getElementById("images")
-            var img = document.createElement("img")
-            img.src= "data:image/png;base64,"+data.image
-            img.style.width = "128px"
-            img.style.height = "128px"
-            images.appendChild(img)
-        }
-    </script>
-    <style>
-        body {
-          margin: 0;
-          font-family: Arial, sans-serif;
-        }
-        .navbar {
-          display: flex;
-          justify-content: space-between;
-          align-items: center;
-          background-color: #333;
-          color: white;
-          padding: 10px;
-        }
-        .navbar .back-button {
-          background-color: #444;
-          color: white;
-          border: none;
-          padding: 10px 20px;
-          cursor: pointer;
-          border-radius: 5px;
-        }
-        .navbar .back-button:hover {
-          background-color: #555;
-        }
-    </style>
-</head>
-<body>
-<div class="navbar">
-    <button class="back-button" onclick="goBack()">Back</button>
-    <h3>Navigation Bar</h3>
-</div>
-<h4>WebView Bridge Example</h4>
-<p>
-    <input type="text" id="username" value="username" />
-</p>
-
-<p>
-    <input type="text" id="password" value="password" />
-</p>
-<div>
-    <button onclick="sendCredentialsToAndroid()">
-        Send User Credentials to Android
-    </button>
-</div>
-<div>
-    <button onclick="saveHeader()">
-        Save Auth Header to Android
-    </button>
-</div>
-<div><button onclick="sendMessageToAndroid()">Send Message to Android</button></div>
-<div><button onclick="showActionSheet()">Show Action Sheet</button></div>
-<div id="images"></div>
-</body>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="./favicon.ico" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vite App</title>
+    <link rel="stylesheet" href="./assets/index-CAM6nHK1.css">
+  </head>
+  <body>
+    <div id="app"></div>
+    <script id="vite-legacy-polyfill" src="./assets/polyfills-legacy-f_YiQI9j.js"></script>
+    <script id="vite-legacy-entry" src="./assets/index-legacy-BsJj3jh5.js">System.import(document.getElementById('vite-legacy-entry').getAttribute('src'))</script>
+  </body>
 </html>

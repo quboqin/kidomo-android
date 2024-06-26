@@ -131,7 +131,10 @@ fun WebView(
                         val jsonString = jsonObject.toString()
 
                         webView.post {
-                            webView.evaluateJavascript("javascript:nativeImageData($jsonString);", null)
+                            webView.evaluateJavascript(
+                                "javascript:nativeImageData($jsonString);",
+                                null
+                            )
                         }
                     }
                 }
@@ -207,37 +210,56 @@ private class WebAppInterface(
     }
 
     @JavascriptInterface
-    fun saveHeader(data: String) {
-        try {
-            val jsonObject = JSONObject(data)
-
-            val bladeAuth = jsonObject.optString("bladeAuth", "")
-            val authorization = jsonObject.optString("authorization", "")
-
-            val headerPreferenceHelper = PreferenceHelper<Header>(context, "KidomoPreferences", "HeaderKey")
-
-            val header = Header(bladeAuth, authorization)
-
-            headerPreferenceHelper.saveObject(header)
-
-            val retrievedHeader: Header? = headerPreferenceHelper.getObject(Header::class.java)
-            retrievedHeader?.let {
-                Log.d("WebAppInterface", "BladeAuth: ${it.BladeAuth}, Authorization: ${it.Authorization}")
-            }
-        } catch (e: JSONException) {
-            e.printStackTrace()
-        }
-    }
-
-    @JavascriptInterface
     fun callFromJavascript(jsonString: String) {
         val gson = Gson()
         val type = object : TypeToken<Map<String, Any>>() {}.type
         val jsonObject: Map<String, Any> = gson.fromJson(jsonString, type)
         println(jsonObject)
 
+        val action = jsonObject["action"] as? String
         val callback = jsonObject["callback"] as? String
-        val jsonString = viewModel.nativeTask(jsonObject, onBackButtonPressed)
+
+        var jsonString = ""
+
+        when (action) {
+            "back" -> {
+                jsonString = viewModel.nativeTask(jsonObject, onBackButtonPressed)
+            }
+
+            "set_header" -> {
+                try {
+                    val authObject = jsonObject["auth"] as? Map<*, *>
+
+                    val bladeAuth = authObject?.get("BladeAuth") as String
+                    val authorization = authObject["Authorization"] as String
+
+                    val headerPreferenceHelper =
+                        PreferenceHelper<Header>(context, "KidomoPreferences", "HeaderKey")
+
+                    val header = Header(bladeAuth, authorization)
+
+                    headerPreferenceHelper.saveObject(header)
+
+                    val retrievedHeader: Header? = headerPreferenceHelper.getObject(Header::class.java)
+                    retrievedHeader?.let {
+                        Log.d(
+                            "WebAppInterface",
+                            "BladeAuth: ${it.BladeAuth}, Authorization: ${it.Authorization}"
+                        )
+                    }
+                } catch (e: JSONException) {
+                    e.printStackTrace()
+                }
+            }
+
+            "action3" -> {
+                // Handle action3
+            }
+
+            else -> {
+                return
+            }
+        }
 
         // Call the JavaScript callback function with the response
         webView.post {
