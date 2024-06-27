@@ -127,10 +127,12 @@ fun WebView(
 
                         val imageString = encodeImageUriToBase64(context, imageUri)
                         val jsonObject = JSONObject()
+                        jsonObject.put("taskId", mainViewModel.taskId.value)
                         jsonObject.put("image", imageString)
                         val jsonString = jsonObject.toString()
 
                         webView.post {
+                            Log.w("WebScreen", "webView call nativeImageData with $jsonObject")
                             webView.evaluateJavascript(
                                 "javascript:nativeImageData($jsonString);",
                                 null
@@ -217,13 +219,18 @@ private class WebAppInterface(
         println(jsonObject)
 
         val action = jsonObject["action"] as? String
-        val callback = jsonObject["callback"] as? String
+
 
         var jsonString = ""
 
         when (action) {
             "back" -> {
+                val callback = jsonObject["callback"] as? String
                 jsonString = viewModel.nativeTask(jsonObject, onBackButtonPressed)
+                // Call the JavaScript callback function with the response
+                webView.post {
+                    webView.evaluateJavascript("javascript:$callback($jsonString);", null)
+                }
             }
 
             "set_header" -> {
@@ -252,8 +259,11 @@ private class WebAppInterface(
                 }
             }
 
-            "action3" -> {
-                // Handle action3
+            "camera" -> {
+                val data = jsonObject["data"] as? Map<*, *> ?: throw IllegalArgumentException("Data is not a map")
+                val newTaskId = data["taskId"] as? Double ?: throw IllegalArgumentException("Task ID is not found or not a Double")
+                viewModel.updateTaskId(newTaskId.toInt())
+                showDialogCallback(true)
             }
 
             else -> {
@@ -261,9 +271,6 @@ private class WebAppInterface(
             }
         }
 
-        // Call the JavaScript callback function with the response
-        webView.post {
-            webView.evaluateJavascript("javascript:$callback($jsonString);", null)
-        }
+
     }
 }
