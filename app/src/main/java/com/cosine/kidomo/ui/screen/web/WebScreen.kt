@@ -148,9 +148,8 @@ fun WebView(
 
     if (showDialog) {
         ActionSheet(onDismiss = { showDialog = false }, takePhoto = {
-            println("take photo")
             gotoScannerScreen()
-        }, imageUri = imageUri)
+        })
     }
 }
 
@@ -165,8 +164,7 @@ fun getStatusBarHeight(context: android.content.Context): Int {
 }
 
 @Composable
-fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit, imageUri: Uri) {
-    val context = LocalContext.current
+fun ActionSheet(onDismiss: () -> Unit, takePhoto: () -> Unit) {
     Dialog(onDismissRequest = onDismiss) {
         Surface(
             shape = MaterialTheme.shapes.medium,
@@ -286,7 +284,5 @@ private class WebAppInterface(
                 return
             }
         }
-
-
     }
 }
