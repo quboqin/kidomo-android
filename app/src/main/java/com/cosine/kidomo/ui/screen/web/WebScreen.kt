@@ -34,6 +34,7 @@ import com.google.gson.reflect.TypeToken
 import android.net.Uri
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
@@ -41,6 +42,7 @@ import com.cosine.kidomo.ui.viewmodels.Header
 import com.cosine.kidomo.ui.viewmodels.PreferenceHelper
 import org.json.JSONObject
 import com.cosine.kidomo.util.encodeImageUriToBase64
+import kotlinx.coroutines.launch
 import org.json.JSONException
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -216,21 +218,23 @@ private class WebAppInterface(
         val gson = Gson()
         val type = object : TypeToken<Map<String, Any>>() {}.type
         val jsonObject: Map<String, Any> = gson.fromJson(jsonString, type)
-        println(jsonObject)
 
         val action = jsonObject["action"] as? String
+        val callback = jsonObject["callback"] as? String
 
-
-        var jsonString = ""
+        val returnObject = JSONObject()
 
         when (action) {
             "back" -> {
-                val callback = jsonObject["callback"] as? String
-                jsonString = viewModel.nativeTask(jsonObject, onBackButtonPressed)
+                returnObject.put("key1", "back")
+                returnObject.put("key2", 12345)
+                returnObject.put("key3", true)
+                val returnString = returnObject.toString()
                 // Call the JavaScript callback function with the response
                 webView.post {
-                    webView.evaluateJavascript("javascript:$callback($jsonString);", null)
+                    webView.evaluateJavascript("javascript:$callback($returnString);", null)
                 }
+                onBackButtonPressed()
             }
 
             "set_header" -> {
@@ -247,12 +251,22 @@ private class WebAppInterface(
 
                     headerPreferenceHelper.saveObject(header)
 
-                    val retrievedHeader: Header? = headerPreferenceHelper.getObject(Header::class.java)
+                    val retrievedHeader: Header? =
+                        headerPreferenceHelper.getObject(Header::class.java)
                     retrievedHeader?.let {
                         Log.d(
                             "WebAppInterface",
                             "BladeAuth: ${it.BladeAuth}, Authorization: ${it.Authorization}"
                         )
+                    }
+
+                    returnObject.put("key1", "set_header")
+                    returnObject.put("key2", 67890)
+                    returnObject.put("key3", false)
+                    val returnString = returnObject.toString()
+                    // Call the JavaScript callback function with the response
+                    webView.post {
+                        webView.evaluateJavascript("javascript:$callback($returnString);", null)
                     }
                 } catch (e: JSONException) {
                     e.printStackTrace()
@@ -260,8 +274,10 @@ private class WebAppInterface(
             }
 
             "camera" -> {
-                val data = jsonObject["data"] as? Map<*, *> ?: throw IllegalArgumentException("Data is not a map")
-                val newTaskId = data["taskId"] as? Double ?: throw IllegalArgumentException("Task ID is not found or not a Double")
+                val data = jsonObject["data"] as? Map<*, *>
+                    ?: throw IllegalArgumentException("Data is not a map")
+                val newTaskId = data["taskId"] as? Double
+                    ?: throw IllegalArgumentException("Task ID is not found or not a Double")
                 viewModel.updateTaskId(newTaskId.toInt())
                 showDialogCallback(true)
             }
