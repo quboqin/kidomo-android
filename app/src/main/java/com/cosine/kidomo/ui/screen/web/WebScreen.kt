@@ -249,7 +249,7 @@ private class WebAppInterface(
                 webView.post {
                     webView.evaluateJavascript("javascript:$callback($returnString);", null)
                 }
-                onBackButtonPressed()
+                viewModel.nativeTask(onBackButtonPressed)
             }
 
             "set_header" -> {

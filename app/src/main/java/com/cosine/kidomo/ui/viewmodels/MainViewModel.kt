@@ -6,7 +6,9 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
+import kotlinx.coroutines.launch
 
 class MainViewModel(
 ) : ViewModel() {
@@ -23,5 +25,11 @@ class MainViewModel(
 
     fun updateTaskId(newTaskId: Int) {
         taskId.value = newTaskId
+    }
+
+    fun nativeTask(onBackButtonPressed: () -> Unit) {
+        viewModelScope.launch {
+            onBackButtonPressed()
+        }
     }
 }
