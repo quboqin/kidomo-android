@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
+import android.webkit.WebSettings
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import android.webkit.WebView
@@ -91,15 +92,38 @@ fun WebView(
     // Use a saveable state holder to remember the WebView's state
     val stateHolder = rememberSaveableStateHolder()
 
+    val TAG = "WebView Screen"
+
     stateHolder.SaveableStateProvider("webview_state") {
         AndroidView(
             factory = { context ->
                 WebView(context).apply {
                     isWebViewLoaded.value = false
+                    webChromeClient = WebChromeClient()
+                    settings.javaScriptEnabled = true
+                    settings.domStorageEnabled = true
+                    settings.cacheMode = WebSettings.LOAD_DEFAULT
+                    addJavascriptInterface(
+                        WebAppInterface(
+                            context,
+                            this,
+                            mainViewModel,
+                            onBackButtonPressed,
+                            showDialogCallback = { show ->
+                                showDialog = show
+                            }), "Android"
+                    )
                     // Restore state if available
-                    mainViewModel.webViewState?.let {
-                        restoreState(it)
-                    } ?: loadUrl(uriString)
+//                    mainViewModel.webViewState?.let {
+//                        restoreState(it)
+//                    } ?: loadUrl(uriString)
+                    if (mainViewModel.webViewState != null) {
+                        Log.w(TAG, "restore state")
+                        restoreState(mainViewModel.webViewState!!)
+                    } else {
+                        Log.w(TAG, "load url")
+                        loadUrl(uriString)
+                    }
                 }
             },
             modifier = Modifier
@@ -110,20 +134,9 @@ fun WebView(
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
                         isWebViewLoaded.value = true
+                        Log.w(TAG, "onPageFinished")
                     }
                 }
-                it.webChromeClient = WebChromeClient()
-                it.settings.javaScriptEnabled = true
-                it.addJavascriptInterface(
-                    WebAppInterface(
-                        context,
-                        it,
-                        mainViewModel,
-                        onBackButtonPressed,
-                        showDialogCallback = { show ->
-                            showDialog = show
-                        }), "Android"
-                )
                 webViewRef.value = it
             }
         )
@@ -134,6 +147,7 @@ fun WebView(
         onDispose {
             mainViewModel.webViewState = Bundle().apply {
                 webViewRef.value?.saveState(this)
+                Log.w(TAG, "onDispose && save status")
             }
         }
     }
@@ -142,6 +156,8 @@ fun WebView(
         isWebViewLoaded.value.let { _ ->
             result?.value?.let { event ->
                 if (event && imageUri != EMPTY_IMAGE_URI) {
+                    Log.w(TAG, "save image...")
+
                     // Clear the result after handling it
                     savedStateHandle["resultKey"] = false
 
