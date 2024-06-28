@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.net.toUri
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.rememberAsyncImagePainter
 import com.cosine.kidomo.ui.theme.MEDIUM_PADDING
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
@@ -41,7 +42,7 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 @Composable
 fun ScannerScreen(
     onBackButtonPressed: () -> Unit,
-    mainViewModel: MainViewModel
+    mainViewModel: MainViewModel = viewModel()
 ) {
     val imageUri by mainViewModel.imageUri
     val context = LocalContext.current
@@ -113,7 +114,9 @@ fun ScannerScreen(
                                     }
                                 )
                                 Button(
-                                    modifier = Modifier.align(Alignment.Center).padding(MEDIUM_PADDING),
+                                    modifier = Modifier
+                                        .align(Alignment.Center)
+                                        .padding(MEDIUM_PADDING),
                                     onClick = {
                                         showGallerySelect = true
                                     }

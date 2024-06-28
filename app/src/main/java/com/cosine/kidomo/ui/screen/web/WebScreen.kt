@@ -2,6 +2,7 @@ package com.cosine.kidomo.ui.screen.web
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
@@ -18,6 +19,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,10 +33,10 @@ import androidx.compose.ui.window.Dialog
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import android.net.Uri
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.lifecycle.viewModelScope
+import androidx.compose.runtime.saveable.rememberSaveableStateHolder
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
@@ -42,7 +44,6 @@ import com.cosine.kidomo.ui.viewmodels.Header
 import com.cosine.kidomo.ui.viewmodels.PreferenceHelper
 import org.json.JSONObject
 import com.cosine.kidomo.util.encodeImageUriToBase64
-import kotlinx.coroutines.launch
 import org.json.JSONException
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -51,7 +52,7 @@ fun WebScreen(
     uriString: String,
     onBackButtonPressed: () -> Unit,
     gotoScannerScreen: () -> Unit,
-    mainViewModel: MainViewModel,
+    mainViewModel: MainViewModel = viewModel(),
     navController: NavHostController
 ) {
     Scaffold(
@@ -70,7 +71,7 @@ fun WebScreen(
 @SuppressLint("SetJavaScriptEnabled")
 @Composable
 fun WebView(
-    mainViewModel: MainViewModel,
+    mainViewModel: MainViewModel = viewModel(),
     onBackButtonPressed: () -> Unit,
     gotoScannerScreen: () -> Unit,
     uriString: String,
@@ -80,48 +81,64 @@ fun WebView(
     var showDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
     val density = LocalDensity.current
+
     val webViewState = remember { mutableStateOf<WebView?>(null) }
     val isWebViewLoaded = remember { mutableStateOf(false) }
-
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val savedStateHandle = currentBackStackEntry?.savedStateHandle
     val result = savedStateHandle?.getLiveData<Boolean>("resultKey")?.observeAsState()
 
-    AndroidView(
-        factory = { context ->
-            isWebViewLoaded.value = false
-            WebView(context).apply {
-                webViewClient = object : WebViewClient() {
+    // Use a saveable state holder to remember the WebView's state
+    val stateHolder = rememberSaveableStateHolder()
+
+    stateHolder.SaveableStateProvider("webview_state") {
+        AndroidView(
+            factory = { context ->
+                WebView(context).apply {
+                    isWebViewLoaded.value = false
+                    // Restore state if available
+                    mainViewModel.webViewState?.let { restoreState(it) } ?: loadUrl(uriString)
+                }
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(top = with(density) { getStatusBarHeight(context).toDp() }),
+            update = {
+                it.webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
                         isWebViewLoaded.value = true
                     }
                 }
-                webChromeClient = WebChromeClient()
-                settings.javaScriptEnabled = true
-                addJavascriptInterface(
+                it.webChromeClient = WebChromeClient()
+                it.settings.javaScriptEnabled = true
+                it.addJavascriptInterface(
                     WebAppInterface(
                         context,
-                        this,
+                        it,
                         mainViewModel,
                         onBackButtonPressed,
                         showDialogCallback = { show ->
                             showDialog = show
                         }), "Android"
                 )
-                loadUrl(uriString)
+                webViewState.value = it
             }
-        },
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(top = with(density) { getStatusBarHeight(context).toDp() })
-    ) { webView ->
-        webViewState.value = webView
+        )
+    }
+
+    // Save state before disposing the WebView
+    DisposableEffect(Unit) {
+        onDispose {
+            mainViewModel.webViewState = Bundle().apply {
+                webViewState.value?.saveState(this)
+            }
+        }
     }
 
     LaunchedEffect(webViewState.value, result?.value, isWebViewLoaded.value) {
         webViewState.value?.let { webView ->
-            isWebViewLoaded.value.let { loaded ->
+            isWebViewLoaded.value.let { _ ->
                 result?.value?.let { event ->
                     if (event && imageUri != EMPTY_IMAGE_URI) {
                         // Clear the result after handling it

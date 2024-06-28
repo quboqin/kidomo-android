@@ -14,12 +14,14 @@ import com.cosine.kidomo.ui.screen.web.WebScreen
 import com.cosine.kidomo.ui.viewmodels.MainViewModel
 import com.cosine.kidomo.util.AppHolder
 import com.cosine.kidomo.util.AppHolder.SPLASH_SCREEN
+import androidx.lifecycle.viewmodel.compose.viewModel
 
 @Composable
 fun SetupNavigation(
-    navController: NavHostController,
-    mainViewModel: MainViewModel
+    navController: NavHostController
 ) {
+    val mainViewModel: MainViewModel = viewModel()
+
     val screen = remember(navController) {
         Screens(navController = navController)
     }

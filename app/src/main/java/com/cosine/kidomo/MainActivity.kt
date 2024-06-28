@@ -15,15 +15,12 @@ import com.cosine.kidomo.ui.theme.KidomoTheme
 import com.google.android.gms.tasks.OnCompleteListener
 import com.google.firebase.FirebaseApp
 import com.google.firebase.messaging.FirebaseMessaging
-import androidx.activity.viewModels
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.cosine.kidomo.navigation.SetupNavigation
-import com.cosine.kidomo.ui.viewmodels.MainViewModel
 
 class MainActivity : ComponentActivity() {
     private lateinit var navController: NavHostController
-    private val mainViewModel: MainViewModel by viewModels()
 
     private val TAG = "MainActivity"
 
@@ -83,8 +80,7 @@ class MainActivity : ComponentActivity() {
             KidomoTheme {
                 navController = rememberNavController()
                 SetupNavigation(
-                    navController = navController,
-                    mainViewModel = mainViewModel
+                    navController = navController
                 )
             }
         }
