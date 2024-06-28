@@ -82,7 +82,7 @@ fun WebView(
     val context = LocalContext.current
     val density = LocalDensity.current
 
-    val webViewState = remember { mutableStateOf<WebView?>(null) }
+    val webViewRef = remember { mutableStateOf<WebView?>(null) }
     val isWebViewLoaded = remember { mutableStateOf(false) }
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val savedStateHandle = currentBackStackEntry?.savedStateHandle
@@ -97,7 +97,9 @@ fun WebView(
                 WebView(context).apply {
                     isWebViewLoaded.value = false
                     // Restore state if available
-                    mainViewModel.webViewState?.let { restoreState(it) } ?: loadUrl(uriString)
+                    mainViewModel.webViewState?.let {
+                        restoreState(it)
+                    } ?: loadUrl(uriString)
                 }
             },
             modifier = Modifier
@@ -122,7 +124,7 @@ fun WebView(
                             showDialog = show
                         }), "Android"
                 )
-                webViewState.value = it
+                webViewRef.value = it
             }
         )
     }
@@ -131,32 +133,30 @@ fun WebView(
     DisposableEffect(Unit) {
         onDispose {
             mainViewModel.webViewState = Bundle().apply {
-                webViewState.value?.saveState(this)
+                webViewRef.value?.saveState(this)
             }
         }
     }
 
-    LaunchedEffect(webViewState.value, result?.value, isWebViewLoaded.value) {
-        webViewState.value?.let { webView ->
-            isWebViewLoaded.value.let { _ ->
-                result?.value?.let { event ->
-                    if (event && imageUri != EMPTY_IMAGE_URI) {
-                        // Clear the result after handling it
-                        savedStateHandle["resultKey"] = false
+    LaunchedEffect(result?.value, isWebViewLoaded.value) {
+        isWebViewLoaded.value.let { _ ->
+            result?.value?.let { event ->
+                if (event && imageUri != EMPTY_IMAGE_URI) {
+                    // Clear the result after handling it
+                    savedStateHandle["resultKey"] = false
 
-                        val imageString = encodeImageUriToBase64(context, imageUri)
-                        val jsonObject = JSONObject()
-                        jsonObject.put("taskId", mainViewModel.taskId.value)
-                        jsonObject.put("image", imageString)
-                        val jsonString = jsonObject.toString()
+                    val imageString = encodeImageUriToBase64(context, imageUri)
+                    val jsonObject = JSONObject()
+                    jsonObject.put("taskId", mainViewModel.taskId.value)
+                    jsonObject.put("image", imageString)
+                    val jsonString = jsonObject.toString()
 
-                        webView.post {
-                            Log.w("WebScreen", "webView call nativeImageData with $jsonObject")
-                            webView.evaluateJavascript(
-                                "javascript:nativeImageData($jsonString);",
-                                null
-                            )
-                        }
+                    webViewRef.value?.post {
+                        Log.w("WebScreen", "webView call nativeImageData with $jsonObject")
+                        webViewRef.value?.evaluateJavascript(
+                            "javascript:nativeImageData($jsonString);",
+                            null
+                        )
                     }
                 }
             }
