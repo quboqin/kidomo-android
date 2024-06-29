@@ -2,14 +2,17 @@ package com.cosine.kidomo.ui.screen.web
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
+import android.webkit.ConsoleMessage
 import android.webkit.JavascriptInterface
 import android.webkit.WebChromeClient
 import android.webkit.WebSettings
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import android.webkit.WebView
+import android.webkit.WebView.setWebContentsDebuggingEnabled
 import android.webkit.WebViewClient
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -99,7 +102,14 @@ fun WebView(
             factory = { context ->
                 WebView(context).apply {
                     isWebViewLoaded.value = false
-                    webChromeClient = WebChromeClient()
+                    setWebContentsDebuggingEnabled(true)
+                    webChromeClient = object : WebChromeClient() {
+                        override fun onConsoleMessage(message: ConsoleMessage): Boolean {
+                            Log.d("Kidomo", "${message.message()} -- From line " +
+                                    "${message.lineNumber()} of ${message.sourceId()}")
+                            return true
+                        }
+                    }
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
                     settings.cacheMode = WebSettings.LOAD_DEFAULT
