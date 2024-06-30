@@ -5,6 +5,7 @@ import android.os.Bundle
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cosine.kidomo.ui.screen.scan.EMPTY_IMAGE_URI
@@ -15,6 +16,9 @@ class MainViewModel(
 
     val imageUri: MutableState<Uri> = mutableStateOf(EMPTY_IMAGE_URI)
     val taskId: MutableState<Int> = mutableIntStateOf(0)
+
+    var isWebViewLoaded = MutableLiveData<Boolean>(false)
+    var isRestoringState = MutableLiveData<Boolean>(false)
 
     // Add webViewState to hold the WebView state
     var webViewState: Bundle? = null

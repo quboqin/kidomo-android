@@ -49,6 +49,7 @@ import com.cosine.kidomo.ui.viewmodels.PreferenceHelper
 import org.json.JSONObject
 import com.cosine.kidomo.util.encodeImageUriToBase64
 import org.json.JSONException
+import kotlinx.coroutines.delay
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
@@ -166,6 +167,7 @@ fun WebView(
         isWebViewLoaded.value.let { _ ->
             result?.value?.let { event ->
                 if (event && imageUri != EMPTY_IMAGE_URI) {
+                    delay(500L)
                     Log.w(TAG, "save image...")
 
                     // Clear the result after handling it
