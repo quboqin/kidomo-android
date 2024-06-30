@@ -88,7 +88,6 @@ fun WebView(
     val density = LocalDensity.current
 
     val webViewRef = remember { mutableStateOf<WebView?>(null) }
-    val isWebViewLoaded = remember { mutableStateOf(false) }
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val savedStateHandle = currentBackStackEntry?.savedStateHandle
     val result = savedStateHandle?.getLiveData<Boolean>("resultKey")?.observeAsState()
@@ -102,11 +101,11 @@ fun WebView(
         AndroidView(
             factory = { context ->
                 WebView(context).apply {
-                    isWebViewLoaded.value = false
+                    mainViewModel.isWebViewLoaded.value = false
                     setWebContentsDebuggingEnabled(true)
                     webChromeClient = object : WebChromeClient() {
                         override fun onConsoleMessage(message: ConsoleMessage): Boolean {
-                            Log.d("Kidomo", "${message.message()} -- From line " +
+                            Log.d("Kidomo Vue App", "${message.message()} -- From line " +
                                     "${message.lineNumber()} of ${message.sourceId()}")
                             return true
                         }
@@ -124,13 +123,10 @@ fun WebView(
                                 showDialog = show
                             }), "Android"
                     )
-                    // Restore state if available
-//                    mainViewModel.webViewState?.let {
-//                        restoreState(it)
-//                    } ?: loadUrl(uriString)
                     if (mainViewModel.webViewState != null) {
                         Log.w(TAG, "restore state")
                         restoreState(mainViewModel.webViewState!!)
+                        mainViewModel.isWebViewLoaded.value = false
                     } else {
                         Log.w(TAG, "load url")
                         loadUrl(uriString)
@@ -144,7 +140,7 @@ fun WebView(
                 it.webViewClient = object : WebViewClient() {
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
-                        isWebViewLoaded.value = true
+                        mainViewModel.isWebViewLoaded.value = true
                         Log.w(TAG, "onPageFinished")
                     }
                 }
@@ -163,8 +159,8 @@ fun WebView(
         }
     }
 
-    LaunchedEffect(result?.value, isWebViewLoaded.value) {
-        isWebViewLoaded.value.let { _ ->
+    LaunchedEffect(result?.value, mainViewModel.isWebViewLoaded.value) {
+        mainViewModel.isWebViewLoaded.value.let { _ ->
             result?.value?.let { event ->
                 if (event && imageUri != EMPTY_IMAGE_URI) {
                     delay(500L)

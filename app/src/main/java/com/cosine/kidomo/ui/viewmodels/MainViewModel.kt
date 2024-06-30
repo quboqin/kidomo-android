@@ -18,7 +18,6 @@ class MainViewModel(
     val taskId: MutableState<Int> = mutableIntStateOf(0)
 
     var isWebViewLoaded = MutableLiveData<Boolean>(false)
-    var isRestoringState = MutableLiveData<Boolean>(false)
 
     // Add webViewState to hold the WebView state
     var webViewState: Bundle? = null
