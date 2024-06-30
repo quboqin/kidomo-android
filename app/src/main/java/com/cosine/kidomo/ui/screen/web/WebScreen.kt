@@ -105,14 +105,14 @@ fun WebView(
                     setWebContentsDebuggingEnabled(true)
                     webChromeClient = object : WebChromeClient() {
                         override fun onConsoleMessage(message: ConsoleMessage): Boolean {
-                            Log.d("Kidomo Vue App", "${message.message()} -- From line " +
+                            Log.d("WebView Screen", "${message.message()} -- From line " +
                                     "${message.lineNumber()} of ${message.sourceId()}")
                             return true
                         }
                     }
                     settings.javaScriptEnabled = true
                     settings.domStorageEnabled = true
-                    settings.cacheMode = WebSettings.LOAD_DEFAULT
+                    settings.cacheMode = WebSettings.LOAD_CACHE_ELSE_NETWORK
                     addJavascriptInterface(
                         WebAppInterface(
                             context,
