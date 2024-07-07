@@ -3,7 +3,6 @@ package com.cosine.kidomo.ui.viewmodels
 import android.net.Uri
 import android.os.Bundle
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -15,7 +14,7 @@ class MainViewModel(
 ) : ViewModel() {
 
     val imageUri: MutableState<Uri> = mutableStateOf(EMPTY_IMAGE_URI)
-    val taskId: MutableState<Int> = mutableIntStateOf(0)
+    val taskId: MutableState<String> = mutableStateOf("0")
 
     var isWebViewLoaded = MutableLiveData<Boolean>(false)
 
@@ -26,7 +25,7 @@ class MainViewModel(
         imageUri.value = newImageUri
     }
 
-    fun updateTaskId(newTaskId: Int) {
+    fun updateTaskId(newTaskId: String) {
         taskId.value = newTaskId
     }
 

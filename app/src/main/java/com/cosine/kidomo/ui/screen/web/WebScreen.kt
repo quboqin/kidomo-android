@@ -315,9 +315,9 @@ private class WebAppInterface(
             "camera" -> {
                 val data = jsonObject["data"] as? Map<*, *>
                     ?: throw IllegalArgumentException("Data is not a map")
-                val newTaskId = data["taskId"] as? Double
+                val newTaskId = data["taskId"] as? String
                     ?: throw IllegalArgumentException("Task ID is not found or not a Double")
-                viewModel.updateTaskId(newTaskId.toInt())
+                viewModel.updateTaskId(newTaskId)
                 showDialogCallback(true)
             }
 
