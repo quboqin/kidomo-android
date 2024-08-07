@@ -1,7 +1,7 @@
 [versions]
 accompanistPermissions = "0.31.0-alpha"
 accompanistPermissionsVersion = "0.23.1"
-agp = "8.4.1"
+agp = "8.5.0"
 appcompat = "1.7.0"
 barcodeScanning = "17.2.0"
 buildkonfigGradlePlugin = "0.9.0"
