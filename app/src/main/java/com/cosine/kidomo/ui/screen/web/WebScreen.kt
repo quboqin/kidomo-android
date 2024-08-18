@@ -278,7 +278,7 @@ private class WebAppInterface(
 
             "set_header" -> {
                 try {
-                    val authObject = jsonObject["auth"] as? Map<*, *>
+                    val authObject = jsonObject["params"] as? Map<*, *>
 
                     val bladeAuth = authObject?.get("BladeAuth") as String
                     val authorization = authObject["Authorization"] as String
